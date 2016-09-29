@@ -77,6 +77,18 @@ void Game::Render()
     Clear();
 
     // TODO: Add your rendering code here.
+	float time = float(m_timer.GetTotalSeconds());
+
+	ID3D12DescriptorHeap* heaps[] = { m_resourceDescriptors->Heap() };
+	m_commandList->SetDescriptorHeaps(_countof(heaps), heaps);
+
+	m_spriteBatch->Begin(m_commandList.Get());
+
+	m_spriteBatch->Draw(m_resourceDescriptors->GetGpuHandle(Descriptors::Cat),
+		GetTextureSize(m_texture.Get()),
+		m_screenPos, nullptr, Colors::White, cosf(time) * 4.0f, m_origin);
+
+	m_spriteBatch->End();
 
     // Show the new frame.
     Present();
@@ -285,8 +297,21 @@ void Game::CreateDevice()
 	resourceUpload.Begin();
 
 	DX::ThrowIfFailed(
-		CreateWICTextureFromFile(m_d3dDevice.Get(), resourceUpload, L"cat.png",
-		m_texture.ReleaseAndGetAddressOf(), false));
+		CreateDDSTextureFromFile(m_d3dDevice.Get(), resourceUpload, L"cat.dds",
+		m_texture.ReleaseAndGetAddressOf()));
+
+	CreateShaderResourceView(m_d3dDevice.Get(), m_texture.Get(),
+		m_resourceDescriptors->GetCpuHandle(Descriptors::Cat));
+
+	RenderTargetState rtState(DXGI_FORMAT_B8G8R8A8_UNORM, DXGI_FORMAT_D32_FLOAT);
+
+	SpriteBatchPipelineStateDescription pd(rtState);
+	m_spriteBatch = std::make_unique<SpriteBatch>(m_d3dDevice.Get(), resourceUpload, pd);
+
+	XMUINT2 catSize = GetTextureSize(m_texture.Get());
+
+	m_origin.x = float(catSize.x / 2);
+	m_origin.y = float(catSize.y / 2);
 
 	auto uploadResourcesFinished = resourceUpload.End(m_commandQueue.Get());
 
@@ -420,6 +445,13 @@ void Game::CreateResources()
     m_d3dDevice->CreateDepthStencilView(m_depthStencil.Get(), &dsvDesc, m_dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 
     // TODO: Initialize windows-size dependent objects here.
+	D3D12_VIEWPORT viewport = { 0.0f, 0.0f,
+		static_cast<float>(backBufferWidth), static_cast<float>(backBufferHeight),
+		D3D12_MIN_DEPTH, D3D12_MAX_DEPTH };
+	m_spriteBatch->SetViewport(viewport);
+	
+	m_screenPos.x = backBufferWidth / 2.0f;
+	m_screenPos.y = backBufferHeight / 2.0f;
 }
 
 void Game::WaitForGpu() noexcept
@@ -511,6 +543,7 @@ void Game::OnDeviceLost()
 	m_graphicsMemory.reset();
 	m_texture.Reset();
 	m_resourceDescriptors.reset();
+	m_spriteBatch.reset();
 
     for (UINT n = 0; n < c_swapBufferCount; n++)
     {
