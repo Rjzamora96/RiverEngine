@@ -18,11 +18,13 @@
     <ClInclude Include="d3dx12.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="Renderable.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Renderable.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
@@ -35,6 +37,9 @@
       <Filter>Assets</Filter>
     </Image>
     <Image Include="cat.DDS">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="dog.png">
       <Filter>Assets</Filter>
     </Image>
   </ItemGroup>

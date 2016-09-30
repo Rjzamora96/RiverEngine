@@ -82,14 +82,20 @@ private:
 	std::unique_ptr<DirectX::GraphicsMemory> m_graphicsMemory;
 	std::unique_ptr<DirectX::DescriptorHeap> m_resourceDescriptors;
 	Microsoft::WRL::ComPtr<ID3D12Resource> m_texture;
+	Microsoft::WRL::ComPtr<ID3D12Resource> m_textures[2];
 
 	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
 	DirectX::SimpleMath::Vector2 m_screenPos;
 	DirectX::SimpleMath::Vector2 m_origin;
+	wchar_t* m_paths[2] = { L"dog.png", L"cat.png" };
+
+	RECT m_fullscreenRect;
+	Microsoft::WRL::ComPtr<ID3D12Resource> m_background;
 
 	enum Descriptors
 	{
 		Cat,
+		Background,
 		Count
 	};
 };

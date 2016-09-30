@@ -77,17 +77,27 @@ void Game::Render()
     Clear();
 
     // TODO: Add your rendering code here.
-	float time = float(m_timer.GetTotalSeconds());
+	//float time = float(m_timer.GetTotalSeconds());
 
 	ID3D12DescriptorHeap* heaps[] = { m_resourceDescriptors->Heap() };
 	m_commandList->SetDescriptorHeaps(_countof(heaps), heaps);
 
 	m_spriteBatch->Begin(m_commandList.Get());
+	for (int i = 0; i < 2; i++)
+	{
+		m_spriteBatch->Draw(m_resourceDescriptors->GetGpuHandle(i),
+			GetTextureSize(m_textures[i].Get()),
+			m_screenPos, nullptr, Colors::White, 0.0f, m_origin);
+	}
+/*
+	m_spriteBatch->Draw(m_resourceDescriptors->GetGpuHandle(Descriptors::Background),
+		GetTextureSize(m_background.Get()),
+		m_fullscreenRect);
 
 	m_spriteBatch->Draw(m_resourceDescriptors->GetGpuHandle(Descriptors::Cat),
 		GetTextureSize(m_texture.Get()),
-		m_screenPos, nullptr, Colors::White, cosf(time) * 4.0f, m_origin);
-
+		m_screenPos, nullptr, Colors::White, 0.0f, m_origin);
+*/
 	m_spriteBatch->End();
 
     // Show the new frame.
@@ -285,6 +295,7 @@ void Game::CreateDevice()
     }
 
     // TODO: Initialize device dependent objects here (independent of window size).
+
 	m_graphicsMemory = std::make_unique<GraphicsMemory>(m_d3dDevice.Get());
 
 	m_resourceDescriptors = std::make_unique<DescriptorHeap>(m_d3dDevice.Get(),
@@ -295,7 +306,16 @@ void Game::CreateDevice()
 	ResourceUploadBatch resourceUpload(m_d3dDevice.Get());
 
 	resourceUpload.Begin();
+	for (int i = 0; i < 2; i++)
+	{
+		DX::ThrowIfFailed(
+			CreateWICTextureFromFile(m_d3dDevice.Get(), resourceUpload, m_paths[i],
+				m_textures[i].ReleaseAndGetAddressOf(), false));
 
+		CreateShaderResourceView(m_d3dDevice.Get(), m_textures[i].Get(),
+			m_resourceDescriptors->GetCpuHandle(i));
+	}
+/*
 	DX::ThrowIfFailed(
 		CreateDDSTextureFromFile(m_d3dDevice.Get(), resourceUpload, L"cat.dds",
 		m_texture.ReleaseAndGetAddressOf()));
@@ -303,12 +323,19 @@ void Game::CreateDevice()
 	CreateShaderResourceView(m_d3dDevice.Get(), m_texture.Get(),
 		m_resourceDescriptors->GetCpuHandle(Descriptors::Cat));
 
+	DX::ThrowIfFailed(
+		CreateWICTextureFromFile(m_d3dDevice.Get(), resourceUpload, L"sunset.jpg",
+			m_background.ReleaseAndGetAddressOf(), false));
+
+	CreateShaderResourceView(m_d3dDevice.Get(), m_background.Get(),
+		m_resourceDescriptors->GetCpuHandle(Descriptors::Background));
+*/
 	RenderTargetState rtState(DXGI_FORMAT_B8G8R8A8_UNORM, DXGI_FORMAT_D32_FLOAT);
 
 	SpriteBatchPipelineStateDescription pd(rtState);
 	m_spriteBatch = std::make_unique<SpriteBatch>(m_d3dDevice.Get(), resourceUpload, pd);
 
-	XMUINT2 catSize = GetTextureSize(m_texture.Get());
+	XMUINT2 catSize = GetTextureSize(m_textures[0].Get());
 
 	m_origin.x = float(catSize.x / 2);
 	m_origin.y = float(catSize.y / 2);
@@ -452,6 +479,11 @@ void Game::CreateResources()
 	
 	m_screenPos.x = backBufferWidth / 2.0f;
 	m_screenPos.y = backBufferHeight / 2.0f;
+
+	m_fullscreenRect.left = 0;
+	m_fullscreenRect.top = 0;
+	m_fullscreenRect.right = backBufferWidth;
+	m_fullscreenRect.bottom = backBufferHeight;
 }
 
 void Game::WaitForGpu() noexcept
@@ -544,6 +576,7 @@ void Game::OnDeviceLost()
 	m_texture.Reset();
 	m_resourceDescriptors.reset();
 	m_spriteBatch.reset();
+	m_background.Reset();
 
     for (UINT n = 0; n < c_swapBufferCount; n++)
     {
