@@ -34,3 +34,4 @@
 /.vs
 /RenderEngineDX12/Debug
 /*.db
+/GameEngine/Debug
