@@ -1,12 +1,13 @@
 #pragma once
-class Renderable
+
+#include "pch.h"
+
+struct Renderable
 {
-public:
-	Renderable();
-	~Renderable();
-	DirectX::SimpleMath::Vector2 m_origin;
-	DirectX::SimpleMath::Vector2 m_position;
-	float m_layer;
-	unsigned m_id;
+	DirectX::SimpleMath::Vector2 origin;
+	DirectX::SimpleMath::Vector2 position;
+	Microsoft::WRL::ComPtr<ID3D12Resource> texture;
+	float layer;
+	unsigned id;
 };
 

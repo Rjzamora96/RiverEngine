@@ -83,9 +83,9 @@ void Game::Render()
 	m_commandList->SetDescriptorHeaps(_countof(heaps), heaps);
 
 	m_spriteBatch->Begin(m_commandList.Get());
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < m_renderables.Count(); i++)
 	{
-		m_spriteBatch->Draw(m_resourceDescriptors->GetGpuHandle(i),
+		m_spriteBatch->Draw(m_resourceDescriptors->GetGpuHandle(m_renderables[i].id),
 			GetTextureSize(m_textures[i].Get()),
 			m_screenPos, nullptr, Colors::White, 0.0f, m_origin);
 	}

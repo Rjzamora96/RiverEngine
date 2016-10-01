@@ -5,6 +5,8 @@
 #pragma once
 
 #include "StepTimer.h"
+#include "Renderable.h"
+#include "ArrayList.h"
 
 
 // A basic game implementation that creates a D3D12 device and
@@ -88,6 +90,8 @@ private:
 	DirectX::SimpleMath::Vector2 m_screenPos;
 	DirectX::SimpleMath::Vector2 m_origin;
 	wchar_t* m_paths[2] = { L"dog.png", L"cat.png" };
+
+	RiverEngine::ArrayList<Renderable> m_renderables;
 
 	RECT m_fullscreenRect;
 	Microsoft::WRL::ComPtr<ID3D12Resource> m_background;
