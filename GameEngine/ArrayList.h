@@ -11,7 +11,7 @@ namespace RiverEngine
 		void Add(T t);
 		bool Empty();
 		int Count();
-		T operator[](int i);
+		T& operator[](int i);
 	private:
 		T* m_array;
 		int m_count;
@@ -60,7 +60,7 @@ namespace RiverEngine
 		return m_count;
 	}
 	template<class T>
-	T ArrayList<T>::operator[](int i)
+	T& ArrayList<T>::operator[](int i)
 	{
 		return m_array[i];
 	}

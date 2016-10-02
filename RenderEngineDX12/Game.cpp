@@ -86,18 +86,9 @@ void Game::Render()
 	for (int i = 0; i < m_renderables.Count(); i++)
 	{
 		m_spriteBatch->Draw(m_resourceDescriptors->GetGpuHandle(m_renderables[i].id),
-			GetTextureSize(m_textures[i].Get()),
-			m_screenPos, nullptr, Colors::White, 0.0f, m_origin);
+			GetTextureSize(m_renderables[i].texture.Get()),
+			m_renderables[i].position, nullptr, Colors::White, 0.0f, m_renderables[i].origin);
 	}
-/*
-	m_spriteBatch->Draw(m_resourceDescriptors->GetGpuHandle(Descriptors::Background),
-		GetTextureSize(m_background.Get()),
-		m_fullscreenRect);
-
-	m_spriteBatch->Draw(m_resourceDescriptors->GetGpuHandle(Descriptors::Cat),
-		GetTextureSize(m_texture.Get()),
-		m_screenPos, nullptr, Colors::White, 0.0f, m_origin);
-*/
 	m_spriteBatch->End();
 
     // Show the new frame.
@@ -306,13 +297,14 @@ void Game::CreateDevice()
 	ResourceUploadBatch resourceUpload(m_d3dDevice.Get());
 
 	resourceUpload.Begin();
-	for (int i = 0; i < 2; i++)
+	for (unsigned int i = 0; i < m_renderables.Count(); i++)
 	{
+		m_renderables[i].id = i;
 		DX::ThrowIfFailed(
 			CreateWICTextureFromFile(m_d3dDevice.Get(), resourceUpload, m_paths[i],
-				m_textures[i].ReleaseAndGetAddressOf(), false));
+				m_renderables[i].texture.ReleaseAndGetAddressOf(), false));
 
-		CreateShaderResourceView(m_d3dDevice.Get(), m_textures[i].Get(),
+		CreateShaderResourceView(m_d3dDevice.Get(), m_renderables[i].texture.Get(),
 			m_resourceDescriptors->GetCpuHandle(i));
 	}
 /*

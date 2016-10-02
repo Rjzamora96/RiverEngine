@@ -198,11 +198,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\GameEngine\GameEngine.vcxproj">
-      <Project>{e2900885-e25f-4f66-bdfc-d76d6c9336ce}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\directxtk12_desktop_2015.2016.9.15.1\build\native\directxtk12_desktop_2015.targets" Condition="Exists('..\packages\directxtk12_desktop_2015.2016.9.15.1\build\native\directxtk12_desktop_2015.targets')" />
