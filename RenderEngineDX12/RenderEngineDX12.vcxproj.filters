@@ -19,11 +19,13 @@
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="Renderable.h" />
+    <ClInclude Include="RenderableManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="RenderableManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

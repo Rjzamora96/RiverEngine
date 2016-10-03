@@ -6,7 +6,7 @@ namespace RiverEngine
 	class ArrayList
 	{
 	public:
-		ArrayList(int capacity = 0);
+		ArrayList(int capacity = 1);
 		~ArrayList();
 		void Add(T t);
 		bool Empty();
@@ -35,11 +35,11 @@ namespace RiverEngine
 	{
 		if (m_count == m_size - 1)
 		{
-			T* temp = new T[m_size * 2]
-				for (int i = 0; i < m_size; i++)
-				{
-					temp[i] = m_array[i];
-				}
+			T* temp = new T[m_size * 2];
+			for (int i = 0; i < m_size; i++)
+			{
+				temp[i] = m_array[i];
+			}
 			m_size *= 2;
 			delete[] m_array;
 			m_array = temp;

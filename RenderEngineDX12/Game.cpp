@@ -33,6 +33,9 @@ void Game::Initialize(HWND window, int width, int height)
 	m_outputWidth = std::max(width, 1);
 	m_outputHeight = std::max(height, 1);
 
+	m_renderables.Add(Renderable());
+	m_renderables.Add(Renderable());
+
 	CreateDevice();
 	CreateResources();
 
@@ -306,6 +309,10 @@ void Game::CreateDevice()
 
 		CreateShaderResourceView(m_d3dDevice.Get(), m_renderables[i].texture.Get(),
 			m_resourceDescriptors->GetCpuHandle(i));
+		m_renderables[i].layer = 0.0f;
+		XMUINT2 imageSize = GetTextureSize(m_renderables[i].texture.Get());
+		m_renderables[i].origin.x = float(imageSize.x / 2);
+		m_renderables[i].origin.y = float(imageSize.x / 2);
 	}
 /*
 	DX::ThrowIfFailed(
@@ -326,11 +333,6 @@ void Game::CreateDevice()
 
 	SpriteBatchPipelineStateDescription pd(rtState);
 	m_spriteBatch = std::make_unique<SpriteBatch>(m_d3dDevice.Get(), resourceUpload, pd);
-
-	XMUINT2 catSize = GetTextureSize(m_textures[0].Get());
-
-	m_origin.x = float(catSize.x / 2);
-	m_origin.y = float(catSize.y / 2);
 
 	auto uploadResourcesFinished = resourceUpload.End(m_commandQueue.Get());
 
