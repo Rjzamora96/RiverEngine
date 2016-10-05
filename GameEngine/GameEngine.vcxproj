@@ -138,6 +138,20 @@
   <ItemGroup>
     <ClInclude Include="ArrayList.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="detail\CFunctions.h" />
+    <ClInclude Include="detail\ClassInfo.h" />
+    <ClInclude Include="detail\Constructor.h" />
+    <ClInclude Include="detail\dump.h" />
+    <ClInclude Include="detail\FuncTraits.h" />
+    <ClInclude Include="detail\Iterator.h" />
+    <ClInclude Include="detail\LuaException.h" />
+    <ClInclude Include="detail\LuaHelpers.h" />
+    <ClInclude Include="detail\LuaRef.h" />
+    <ClInclude Include="detail\Namespace.h" />
+    <ClInclude Include="detail\Stack.h" />
+    <ClInclude Include="detail\TypeList.h" />
+    <ClInclude Include="detail\TypeTraits.h" />
+    <ClInclude Include="detail\Userdata.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="lapi.h" />
     <ClInclude Include="lauxlib.h" />
@@ -160,11 +174,14 @@
     <ClInclude Include="ltm.h" />
     <ClInclude Include="lua.h" />
     <ClInclude Include="lua.hpp" />
+    <ClInclude Include="LuaBridge.h" />
     <ClInclude Include="luaconf.h" />
     <ClInclude Include="lualib.h" />
     <ClInclude Include="lundump.h" />
     <ClInclude Include="lvm.h" />
     <ClInclude Include="lzio.h" />
+    <ClInclude Include="RefCountedObject.h" />
+    <ClInclude Include="RefCountedPtr.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Component.cpp" />
