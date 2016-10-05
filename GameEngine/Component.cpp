@@ -3,8 +3,9 @@
 #include <stdio.h>
 
 bool Component::s_breakable;
+luabridge::lua_State* Component::L;
 
-Component::Component()
+Component::Component() : updateFunc(nullptr)
 {
 	m_owner = 0;
 }
@@ -26,8 +27,23 @@ void Component::SetName(const char * const name)
 
 bool Component::Init()
 {
+	using namespace luabridge;
+	if (luaL_dofile(L, m_scriptPath.c_str()) == 0)
+	{
+		LuaRef table = getGlobal(L, "Component");
+		if (table.isTable())
+		{
+			if (table["Update"].isFunction())
+			{
+				updateFunc = std::make_shared<LuaRef>(table["Update"]);
+			}
+			else
+			{
+				updateFunc.reset();
+			}
+		}
+	}
 	m_enabled = true;
-
 	bool result = Initialize();
 	if (!result) printf("Component failed to initialize!\n");
 	else printf("Component Initialized successfully!\n");

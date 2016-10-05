@@ -1,6 +1,11 @@
 #pragma once
 
 #include "Entity.h"
+#include <memory>
+#include "LuaBridge.h"
+#include <string>
+
+class lua_State;
 
 class Component
 {
@@ -12,10 +17,12 @@ class Component
 public:
 	Component();
 	~Component();
+	static void AssignState(luabridge::lua_State* l) { L = l; }
 	void SetName(const char* const name);
 	void SetOwner(Entity* owner) { m_owner = owner; }
+	void SetScript(const std::string& script) { m_scriptPath = script; }
 	bool Init();
-	virtual bool Update(float dt) { dt; return true; }
+	virtual bool Update(float dt) { if(updateFunc) (*updateFunc)(this, dt); return true; }
 	virtual bool Draw() { return true; }
 	virtual bool Initialize() { return true; }
 	void Enable(bool enabled = true) { m_enabled = enabled; }
@@ -30,8 +37,10 @@ protected:
 	char m_name[MAX_NAME_LEN];
 	bool m_enabled = true;
 	Entity* m_owner;
+	std::shared_ptr<luabridge::LuaRef> updateFunc;
 private:
 	static bool s_breakable;
-
+	static luabridge::lua_State* L;
+	std::string m_scriptPath;
 };
 
