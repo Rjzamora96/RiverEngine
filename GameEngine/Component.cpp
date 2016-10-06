@@ -2,72 +2,75 @@
 
 #include <stdio.h>
 
-bool Component::s_breakable;
-luabridge::lua_State* Component::L;
-
-Component::Component() : updateFunc(nullptr)
+namespace RiverEngine
 {
-	m_owner = 0;
-}
+	bool Component::s_breakable;
+	luabridge::lua_State* Component::L;
 
-
-Component::~Component()
-{
-}
-
-void Component::SetName(const char * const name)
-{
-	for (int j = 0; j < MAX_NAME_LEN; ++j)
+	Component::Component() : updateFunc(nullptr)
 	{
-		m_name[j] = name[j];
-		if (!name[j]) return;
+		owner = 0;
 	}
-	m_name[ - 1] = 0;
-}
 
-bool Component::Init()
-{
-	using namespace luabridge;
-	if (luaL_dofile(L, m_scriptPath.c_str()) == 0)
+
+	Component::~Component()
 	{
-		LuaRef table = getGlobal(L, "Component");
-		if (table.isTable())
+	}
+
+	void Component::SetName(const char * const name)
+	{
+		for (int j = 0; j < MAX_NAME_LEN; ++j)
 		{
-			if (table["Update"].isFunction())
+			m_name[j] = name[j];
+			if (!name[j]) return;
+		}
+		m_name[-1] = 0;
+	}
+
+	bool Component::Init()
+	{
+		using namespace luabridge;
+		if (luaL_dofile(L, m_scriptPath.c_str()) == 0)
+		{
+			LuaRef table = getGlobal(L, m_name);
+			if (table.isTable())
 			{
-				updateFunc = std::make_shared<LuaRef>(table["Update"]);
-			}
-			else
-			{
-				updateFunc.reset();
+				if (table["Update"].isFunction())
+				{
+					updateFunc = std::make_shared<LuaRef>(table["Update"]);
+				}
+				else
+				{
+					updateFunc.reset();
+				}
 			}
 		}
+		m_enabled = true;
+		bool result = Initialize();
+		if (!result) printf("Component failed to initialize!\n");
+		else printf("Component Initialized successfully!\n");
+		return true;
 	}
-	m_enabled = true;
-	bool result = Initialize();
-	if (!result) printf("Component failed to initialize!\n");
-	else printf("Component Initialized successfully!\n");
-	return true;
-}
 
-void Component::SetBreak(bool enabled)
-{
-	s_breakable = enabled;
-}
-
-void Component::Break(bool condition, bool keepBreakable)
-{
-	if (condition && s_breakable)
+	void Component::SetBreak(bool enabled)
 	{
-		__debugbreak();
-		s_breakable = keepBreakable;
+		s_breakable = enabled;
 	}
-}
 
-void Component::BreakIf(bool condition)
-{
-	if (condition)
+	void Component::Break(bool condition, bool keepBreakable)
 	{
-		__debugbreak();
+		if (condition && s_breakable)
+		{
+			__debugbreak();
+			s_breakable = keepBreakable;
+		}
+	}
+
+	void Component::BreakIf(bool condition)
+	{
+		if (condition)
+		{
+			__debugbreak();
+		}
 	}
 }

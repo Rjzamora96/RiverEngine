@@ -51,5 +51,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="moveLeft.lua">
+      <Filter>Assets</Filter>
+    </None>
   </ItemGroup>
 </Project>

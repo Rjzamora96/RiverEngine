@@ -31,7 +31,7 @@
 #define LUABRIDGE_REFCOUNTEDPTR_HEADER
 
 #ifdef _MSC_VER
-# include <hash_map>
+# include <unordered_map>
 #else
 # include <stdint.h>
 # include <ext/hash_map>
@@ -45,7 +45,7 @@ struct RefCountedPtrBase
 {
   // Declaration of container for the refcounts
 #ifdef _MSC_VER
-  typedef stdext::hash_map <const void *, int> RefCountsType;
+  typedef std::unordered_map <const void *, int> RefCountsType;
 #else
   struct ptr_hash
   {

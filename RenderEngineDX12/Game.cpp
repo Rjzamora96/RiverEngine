@@ -4,6 +4,11 @@
 
 #include "pch.h"
 #include "Game.h"
+#include "Engine.h"
+#include "Entity.h"
+#include "Transform.h"
+#include "Entity.h"
+#include "Vector2.h"
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
@@ -39,6 +44,7 @@ void Game::Initialize(HWND window, int width, int height)
 	CreateDevice();
 	CreateResources();
 
+	RiverEngine::Engine::Initialize();
 	// TODO: Change the timer settings if you want something other than the default variable timestep mode.
 	// e.g. for 60 FPS fixed timestep update logic, call:
 	/*
@@ -62,6 +68,8 @@ void Game::Tick()
 void Game::Update(DX::StepTimer const& timer)
 {
     float elapsedTime = float(timer.GetElapsedSeconds());
+
+	RiverEngine::Engine::testEntity->Update(elapsedTime);
 
     // TODO: Add your game logic here.
     elapsedTime;
@@ -88,9 +96,11 @@ void Game::Render()
 	m_spriteBatch->Begin(m_commandList.Get());
 	for (int i = 0; i < m_renderables.Count(); i++)
 	{
+		RiverEngine::Vector2* vec = RiverEngine::Engine::testEntity->transform->position;
+		m_renderables[i].position = Vector2(vec->x, vec->y);
 		m_spriteBatch->Draw(m_resourceDescriptors->GetGpuHandle(m_renderables[i].id),
 			GetTextureSize(m_renderables[i].texture.Get()),
-			m_renderables[i].position, nullptr, Colors::White, 0.0f, m_renderables[i].origin);
+			m_renderables[i].position, nullptr, Colors::White, RiverEngine::Engine::testEntity->transform->rotation, m_renderables[i].origin);
 	}
 	m_spriteBatch->End();
 
