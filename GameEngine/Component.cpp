@@ -32,17 +32,14 @@ namespace RiverEngine
 		using namespace luabridge;
 		if (luaL_dofile(L, m_scriptPath.c_str()) == 0)
 		{
-			LuaRef table = getGlobal(L, m_name);
-			if (table.isTable())
+			LuaRef update = getGlobal(L, "Update");
+			if (update.isFunction())
 			{
-				if (table["Update"].isFunction())
-				{
-					updateFunc = std::make_shared<LuaRef>(table["Update"]);
-				}
-				else
-				{
-					updateFunc.reset();
-				}
+				updateFunc = std::make_shared<LuaRef>(getGlobal(L, "Update"));
+			}
+			else
+			{
+				updateFunc.reset();
 			}
 		}
 		m_enabled = true;

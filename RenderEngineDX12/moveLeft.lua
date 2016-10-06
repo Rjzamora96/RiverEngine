@@ -1,10 +1,19 @@
-MoveLeft = {
-	Update=function(MoveLeft, dt)
-		print("Hello!")
-		MoveLeft.entity.transform.position.y = 300
-		MoveLeft.entity.transform.rotation = MoveLeft.entity.transform.rotation + dt
-		if(MoveLeft.entity.transform.position.x <= 800.0) then
-			MoveLeft.entity.transform.position.x = 100.0 * dt + MoveLeft.entity.transform.position.x
+local goingForward = true
+
+function Update(self, dt)
+	self.entity.transform.position.y = 300
+	self.entity.transform.rotation = self.entity.transform.rotation + dt
+	if goingForward then
+		if self.entity.transform.position.x <= 800.0 then
+			self.entity.transform.position.x = 100 * dt + self.entity.transform.position.x
+		else
+			goingForward = false
+		end
+	else
+		if self.entity.transform.position.x >= 0 then
+			self.entity.transform.position.x = -100 * dt + self.entity.transform.position.x
+		else
+			goingForward = true
 		end
 	end
-}
+end

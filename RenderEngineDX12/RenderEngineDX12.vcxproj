@@ -200,6 +200,7 @@
   <ItemGroup>
     <None Include="moveLeft.lua" />
     <None Include="packages.config" />
+    <None Include="Test.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
