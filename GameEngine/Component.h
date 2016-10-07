@@ -34,6 +34,7 @@ namespace RiverEngine
 		static void Break(bool condition = true, bool keepBreakable = true);
 		static void BreakIf(bool condition = true);
 		Entity* owner;
+		int test;
 	protected:
 		template <class T> T* GetSiblingComponent() { return owner->GetComponentByType<T>(); }
 		char m_name[MAX_NAME_LEN];

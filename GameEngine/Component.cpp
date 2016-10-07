@@ -35,7 +35,7 @@ namespace RiverEngine
 			LuaRef update = getGlobal(L, "Update");
 			if (update.isFunction())
 			{
-				updateFunc = std::make_shared<LuaRef>(getGlobal(L, "Update"));
+				updateFunc = std::make_shared<LuaRef>(update);
 			}
 			else
 			{
