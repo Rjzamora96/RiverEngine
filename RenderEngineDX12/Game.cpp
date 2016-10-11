@@ -9,6 +9,7 @@
 #include "Transform.h"
 #include "Entity.h"
 #include "Vector2.h"
+#include "RenderableManager.h"
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
@@ -43,6 +44,8 @@ void Game::Initialize(HWND window, int width, int height)
 
 	CreateDevice();
 	CreateResources();
+
+	RenderableManager::Initialize();
 
 	RiverEngine::Engine::Initialize();
 	// TODO: Change the timer settings if you want something other than the default variable timestep mode.
@@ -310,7 +313,7 @@ void Game::CreateDevice()
 	ResourceUploadBatch resourceUpload(m_d3dDevice.Get());
 
 	resourceUpload.Begin();
-	for (unsigned int i = 0; i < m_renderables.Count(); i++)
+	for (auto& sprite : RenderableManager::spriteMap)
 	{
 		m_renderables[i].id = i;
 		DX::ThrowIfFailed(

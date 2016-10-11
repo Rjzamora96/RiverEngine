@@ -6,6 +6,7 @@ namespace RiverEngine
 {
 	bool Component::s_breakable;
 	luabridge::lua_State* Component::L;
+	Component* Component::activeComponent;
 
 	Component::Component() : updateFunc(nullptr)
 	{
@@ -30,6 +31,9 @@ namespace RiverEngine
 	bool Component::Init()
 	{
 		using namespace luabridge;
+		Component::activeComponent = this;
+		m_properties = newTable(L);
+		m_properties["entity"] = this->owner;
 		if (luaL_dofile(L, m_scriptPath.c_str()) == 0)
 		{
 			LuaRef update = getGlobal(L, "Update");

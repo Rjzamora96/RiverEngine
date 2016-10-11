@@ -39,6 +39,7 @@ namespace RiverEngine
 			.endClass()
 			.beginClass<Component>("Component")
 			.addConstructor<void(*)(void)>()
+			.addStaticFunction("Property", &Component::Property)
 			.addData("entity", &Component::owner)
 			.endClass()
 			.deriveClass<Transform, Component>("Transform")

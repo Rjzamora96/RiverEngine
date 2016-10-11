@@ -195,6 +195,7 @@
     <ClInclude Include="lzio.h" />
     <ClInclude Include="RefCountedObject.h" />
     <ClInclude Include="RefCountedPtr.h" />
+    <ClInclude Include="Sprite.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Vector2.h" />
   </ItemGroup>

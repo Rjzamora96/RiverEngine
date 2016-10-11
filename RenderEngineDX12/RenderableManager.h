@@ -2,14 +2,18 @@
 
 #include "ArrayList.h"
 #include "Renderable.h"
+#include "Sprite.h"
+#include <unordered_map>
 
 class RenderableManager
 {
 public:
 	RenderableManager();
 	~RenderableManager();
-	void AddSprite(wchar_t* path);
-private:
-	RiverEngine::ArrayList<Renderable> m_renderables;
+	static void AddSprite(RiverEngine::Sprite* sprite, std::string path);
+	static void ChangeSprite(RiverEngine::Sprite* sprite, std::string path);
+	static void Initialize();
+	static std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3D12Resource>> spriteMap;
+	static RiverEngine::ArrayList<Renderable> renderables;
 };
 
