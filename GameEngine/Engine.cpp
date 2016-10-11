@@ -3,6 +3,7 @@
 #include "Vector2.h"
 #include "Component.h"
 #include "Transform.h"
+#include "Sprite.h"
 
 #include "LuaBridge.h"
 #include "RefCountedPtr.h"
@@ -52,6 +53,9 @@ namespace RiverEngine
 			.endClass();
 		Component::AssignState(L);
 		testEntity = new Entity();
+		Sprite* sprite = new Sprite("cat.png");
+		Sprite::addSprite(sprite, "cat.png");
+		testEntity->AddComponent(sprite, "Sprite");
 		Component* moveLeft = new Component();
 		testEntity->AddComponent(moveLeft, "MoveLeft");
 		moveLeft->SetScript("moveLeft.lua");

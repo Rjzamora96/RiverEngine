@@ -20,6 +20,7 @@
     </ClInclude>
     <ClInclude Include="Renderable.h" />
     <ClInclude Include="RenderableManager.h" />
+    <ClInclude Include="Texture.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />

@@ -2,11 +2,12 @@
 
 #include "pch.h"
 #include "Sprite.h"
+#include "Texture.h"
 
 struct Renderable
 {
 	RiverEngine::Sprite* sprite;
-	Microsoft::WRL::ComPtr<ID3D12Resource>* texture;
+	Texture* texture;
 	float layer;
 	unsigned int id;
 };

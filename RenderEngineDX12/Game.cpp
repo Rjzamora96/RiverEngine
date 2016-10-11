@@ -10,6 +10,7 @@
 #include "Entity.h"
 #include "Vector2.h"
 #include "RenderableManager.h"
+#include "Texture.h"
 
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
@@ -39,15 +40,13 @@ void Game::Initialize(HWND window, int width, int height)
 	m_outputWidth = std::max(width, 1);
 	m_outputHeight = std::max(height, 1);
 
-	m_renderables.Add(Renderable());
-	m_renderables.Add(Renderable());
+	RenderableManager::Initialize();
+
+	RiverEngine::Engine::Initialize();
 
 	CreateDevice();
 	CreateResources();
 
-	RenderableManager::Initialize();
-
-	RiverEngine::Engine::Initialize();
 	// TODO: Change the timer settings if you want something other than the default variable timestep mode.
 	// e.g. for 60 FPS fixed timestep update logic, call:
 	/*
@@ -97,13 +96,13 @@ void Game::Render()
 	m_commandList->SetDescriptorHeaps(_countof(heaps), heaps);
 
 	m_spriteBatch->Begin(m_commandList.Get());
-	for (int i = 0; i < m_renderables.Count(); i++)
+	for (int i = 0; i < RenderableManager::renderables.Count(); i++)
 	{
 		RiverEngine::Vector2* vec = RiverEngine::Engine::testEntity->transform->position;
-		m_renderables[i].position = Vector2(vec->x, vec->y);
-		m_spriteBatch->Draw(m_resourceDescriptors->GetGpuHandle(m_renderables[i].id),
-			GetTextureSize(m_renderables[i].texture.Get()),
-			m_renderables[i].position, nullptr, Colors::White, RiverEngine::Engine::testEntity->transform->rotation, m_renderables[i].origin);
+		RiverEngine::Vector2 ori = RiverEngine::Engine::testEntity->GetComponentByType<RiverEngine::Sprite>()->origin;
+		m_spriteBatch->Draw(m_resourceDescriptors->GetGpuHandle(RenderableManager::renderables[i]->texture->id),
+			GetTextureSize(RenderableManager::renderables[i]->texture->texture.Get()),
+			Vector2(vec->x, vec->y), nullptr, Colors::White, RiverEngine::Engine::testEntity->transform->rotation, Vector2(ori.x, ori.y));
 	}
 	m_spriteBatch->End();
 
@@ -315,17 +314,16 @@ void Game::CreateDevice()
 	resourceUpload.Begin();
 	for (auto& sprite : RenderableManager::spriteMap)
 	{
-		m_renderables[i].id = i;
+		wchar_t* path = new wchar_t[sprite.first.length() + 1];
+		std::copy(sprite.first.begin(), sprite.first.end(), path);
+		path[sprite.first.length()] = 0;
 		DX::ThrowIfFailed(
-			CreateWICTextureFromFile(m_d3dDevice.Get(), resourceUpload, m_paths[i],
-				m_renderables[i].texture.ReleaseAndGetAddressOf(), false));
+			CreateWICTextureFromFile(m_d3dDevice.Get(), resourceUpload, path,
+				sprite.second->texture.ReleaseAndGetAddressOf(), false));
 
-		CreateShaderResourceView(m_d3dDevice.Get(), m_renderables[i].texture.Get(),
-			m_resourceDescriptors->GetCpuHandle(i));
-		m_renderables[i].layer = 0.0f;
-		XMUINT2 imageSize = GetTextureSize(m_renderables[i].texture.Get());
-		m_renderables[i].origin.x = float(imageSize.x / 2);
-		m_renderables[i].origin.y = float(imageSize.x / 2);
+		CreateShaderResourceView(m_d3dDevice.Get(), sprite.second->texture.Get(),
+			m_resourceDescriptors->GetCpuHandle(sprite.second->id));
+		delete[] path;
 	}
 /*
 	DX::ThrowIfFailed(
@@ -483,9 +481,6 @@ void Game::CreateResources()
 		static_cast<float>(backBufferWidth), static_cast<float>(backBufferHeight),
 		D3D12_MIN_DEPTH, D3D12_MAX_DEPTH };
 	m_spriteBatch->SetViewport(viewport);
-	
-	m_screenPos.x = backBufferWidth / 2.0f;
-	m_screenPos.y = backBufferHeight / 2.0f;
 
 	m_fullscreenRect.left = 0;
 	m_fullscreenRect.top = 0;
@@ -580,7 +575,7 @@ void Game::OnDeviceLost()
 {
     // TODO: Perform Direct3D resource cleanup.
 	m_graphicsMemory.reset();
-	m_texture.Reset();
+	//m_texture.Reset();
 	m_resourceDescriptors.reset();
 	m_spriteBatch.reset();
 	m_background.Reset();

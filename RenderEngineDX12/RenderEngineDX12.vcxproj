@@ -173,6 +173,7 @@
     <ClInclude Include="Renderable.h" />
     <ClInclude Include="RenderableManager.h" />
     <ClInclude Include="StepTimer.h" />
+    <ClInclude Include="Texture.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp" />

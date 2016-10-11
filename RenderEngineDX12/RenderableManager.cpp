@@ -2,7 +2,9 @@
 #include "RenderableManager.h"
 #include "Sprite.h"
 
-RiverEngine::ArrayList<Renderable> RenderableManager::renderables = RiverEngine::ArrayList<Renderable>();
+RiverEngine::ArrayList<Renderable*> RenderableManager::renderables = RiverEngine::ArrayList<Renderable*>();
+std::unordered_map<std::string, Texture*> RenderableManager::spriteMap;
+unsigned int RenderableManager::m_spriteCount = 0;
 
 RenderableManager::RenderableManager()
 {
@@ -14,17 +16,21 @@ RenderableManager::~RenderableManager()
 
 void RenderableManager::AddSprite(RiverEngine::Sprite* sprite, std::string path)
 {
-	Microsoft::WRL::ComPtr<ID3D12Resource> existingTexture = spriteMap[path];
+	Texture* existingTexture = spriteMap[path];
 	if (existingTexture == 0)
 	{
-		spriteMap[path] = Microsoft::WRL::ComPtr<ID3D12Resource>();
+		Texture* t = new Texture();
+		t->id = m_spriteCount;
+		t->texture = Microsoft::WRL::ComPtr<ID3D12Resource>();
+		spriteMap[path] = t;
+		m_spriteCount++;
 	}
-	Renderable r;
-	r.id = renderables.Count();
-	sprite->id = r.id;
-	r.sprite = sprite;
-	r.layer = 0.0f;
-	r.texture = &spriteMap[path];
+	Renderable* r = new Renderable();
+	r->id = renderables.Count();
+	sprite->id = r->id;
+	r->sprite = sprite;
+	r->layer = 0.0f;
+	r->texture = spriteMap[path];
 	renderables.Add(r);
 }
 
@@ -32,10 +38,23 @@ void RenderableManager::ChangeSprite(RiverEngine::Sprite* sprite, std::string pa
 {
 	for (int i = 0; i < renderables.Count(); i++)
 	{
-		if (renderables[i].id == sprite->id)
+		if (renderables[i]->id == sprite->id)
 		{
-			renderables[i].texture = &spriteMap[path];
+			renderables[i]->texture = spriteMap[path];
 		}
+	}
+}
+
+void RenderableManager::AddTexture(std::string path)
+{
+	Texture* existingTexture = spriteMap[path];
+	if (existingTexture == 0)
+	{
+		Texture* t = new Texture();
+		t->id = m_spriteCount;
+		t->texture = Microsoft::WRL::ComPtr<ID3D12Resource>();
+		spriteMap[path] = t;
+		m_spriteCount++;
 	}
 }
 
@@ -43,4 +62,5 @@ void RenderableManager::Initialize()
 {
 	RiverEngine::Sprite::addSprite = &RenderableManager::AddSprite;
 	RiverEngine::Sprite::changeSprite = &RenderableManager::ChangeSprite;
+	RiverEngine::Sprite::addTexture = &RenderableManager::AddTexture;
 }
