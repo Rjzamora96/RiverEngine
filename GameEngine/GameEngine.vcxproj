@@ -196,6 +196,7 @@
     <ClInclude Include="lzio.h" />
     <ClInclude Include="RefCountedObject.h" />
     <ClInclude Include="RefCountedPtr.h" />
+    <ClInclude Include="Scene.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Vector2.h" />
@@ -240,6 +241,7 @@
     <ClCompile Include="lutf8lib.c" />
     <ClCompile Include="lvm.c" />
     <ClCompile Include="lzio.c" />
+    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Sprite.cpp" />
   </ItemGroup>
   <ItemGroup>

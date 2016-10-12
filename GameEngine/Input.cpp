@@ -4,6 +4,8 @@ namespace RiverEngine
 {
 	std::unordered_map<std::string, Input::Keys> Input::keyMap;
 	BindPtr Input::keyDown;
+	BindPtr Input::keyPressed;
+	BindPtr Input::keyReleased;
 
 	void Input::InitializeBindings()
 	{
@@ -11,6 +13,10 @@ namespace RiverEngine
 		keyMap["Down"] = Keys::Down;
 		keyMap["Left"] = Keys::Left;
 		keyMap["Right"] = Keys::Right;
+		keyMap["W"] = Keys::W;
+		keyMap["S"] = Keys::S;
+		keyMap["A"] = Keys::A;
+		keyMap["D"] = Keys::D;
 	}
 
 	bool Input::IsKeyDown(std::string key)
@@ -18,4 +24,13 @@ namespace RiverEngine
 		return keyDown(keyMap[key]);
 	}
 
+	bool Input::IsKeyPressed(std::string key)
+	{
+		return keyPressed(keyMap[key]);
+	}
+
+	bool Input::IsKeyReleased(std::string key)
+	{
+		return keyReleased(keyMap[key]);
+	}
 }

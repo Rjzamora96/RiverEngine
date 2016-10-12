@@ -192,6 +192,7 @@
     <ResourceCompile Include="resource.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="camera.png" />
     <Image Include="cat.DDS" />
     <Image Include="cat.png" />
     <Image Include="directx.ico" />
@@ -201,6 +202,7 @@
     <Manifest Include="settings.manifest" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="cameraMove.lua" />
     <None Include="moveLeft.lua" />
     <None Include="packages.config" />
     <None Include="Test.lua" />

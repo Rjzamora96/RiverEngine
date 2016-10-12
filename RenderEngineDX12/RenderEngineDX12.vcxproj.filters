@@ -46,6 +46,9 @@
     <Image Include="dog.png">
       <Filter>Assets</Filter>
     </Image>
+    <Image Include="camera.png">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="settings.manifest">
@@ -58,6 +61,9 @@
       <Filter>Assets</Filter>
     </None>
     <None Include="Test.lua">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="cameraMove.lua">
       <Filter>Assets</Filter>
     </None>
   </ItemGroup>

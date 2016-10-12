@@ -12,6 +12,8 @@
 #include "RenderableManager.h"
 #include "Texture.h"
 #include "InputManager.h"
+#include "Scene.h"
+
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
@@ -59,6 +61,7 @@ void Game::Initialize(HWND window, int width, int height)
 // Executes the basic game loop.
 void Game::Tick()
 {
+	InputManager::Update();
     m_timer.Tick([&]()
     {
         Update(m_timer);
@@ -72,14 +75,7 @@ void Game::Update(DX::StepTimer const& timer)
 {
     float elapsedTime = float(timer.GetElapsedSeconds());
 
-	UINT backBufferWidth = static_cast<UINT>(m_outputWidth);
-	UINT backBufferHeight = static_cast<UINT>(m_outputHeight);
-	D3D12_VIEWPORT viewport = { 0.0f + m_offset.x, 0.0f + m_offset.y,
-		static_cast<float>(backBufferWidth), static_cast<float>(backBufferHeight),
-		D3D12_MIN_DEPTH, D3D12_MAX_DEPTH };
-	m_spriteBatch->SetViewport(viewport);
-
-	RiverEngine::Engine::testEntity->Update(elapsedTime);
+	RiverEngine::Scene::Update(elapsedTime);
 
     // TODO: Add your game logic here.
     elapsedTime;
@@ -103,18 +99,19 @@ void Game::Render()
 	ID3D12DescriptorHeap* heaps[] = { m_resourceDescriptors->Heap() };
 	m_commandList->SetDescriptorHeaps(_countof(heaps), heaps);
 
+	RiverEngine::Entity* camera = RiverEngine::Scene::GetEntityByTag("Camera");
 	XMMATRIX matrix(1.0f, 0.0f, 0.0f, 0.0f,
 		0.0f, 1.0f, 0.0f, 0.0f,
 		0.0f, 0.0f, 1.0f, 0.0f,
-		m_offset.x, m_offset.y, 0.0f, 1.0f);
+		-camera->transform->position->x, -camera->transform->position->y, 0.0f, 1.0f);
 	m_spriteBatch->Begin(m_commandList.Get(), SpriteSortMode_Deferred, matrix);
 	for (int i = 0; i < RenderableManager::renderables.Count(); i++)
 	{
-		RiverEngine::Vector2* vec = RiverEngine::Engine::testEntity->transform->position;
-		RiverEngine::Vector2 ori = RiverEngine::Engine::testEntity->GetComponentByType<RiverEngine::Sprite>()->origin;
+		RiverEngine::Vector2* vec = RenderableManager::renderables[i]->transform->position;
+		RiverEngine::Vector2 ori = RenderableManager::renderables[i]->sprite->origin;
 		m_spriteBatch->Draw(m_resourceDescriptors->GetGpuHandle(RenderableManager::renderables[i]->texture->id),
 			GetTextureSize(RenderableManager::renderables[i]->texture->texture.Get()),
-			Vector2(vec->x, vec->y), nullptr, Colors::White, RiverEngine::Engine::testEntity->transform->rotation, Vector2(ori.x, ori.y));
+			Vector2(vec->x, vec->y), nullptr, Colors::White, RenderableManager::renderables[i]->transform->rotation, Vector2(ori.x, ori.y));
 	}
 	m_spriteBatch->End();
 

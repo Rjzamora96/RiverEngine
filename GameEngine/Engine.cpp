@@ -8,6 +8,8 @@
 
 #include "LuaBridge.h"
 #include "RefCountedPtr.h"
+#include "Scene.h"
+
 extern "C" {
 # include "lua.h"
 # include "lauxlib.h"
@@ -18,7 +20,6 @@ using namespace luabridge;
 
 namespace RiverEngine
 {
-	Entity* Engine::testEntity;
 
 	Engine::Engine()
 	{
@@ -41,12 +42,14 @@ namespace RiverEngine
 			.endClass();
 		getGlobalNamespace(L)
 			.beginClass<Input>("Input")
-			.addStaticFunction("isKeyDown", &Input::IsKeyDown)
+			.addStaticFunction("IsKeyDown", &Input::IsKeyDown)
+			.addStaticFunction("IsKeyPressed", &Input::IsKeyPressed)
+			.addStaticFunction("IsKeyReleased", &Input::IsKeyReleased)
 			.endClass();
 		getGlobalNamespace(L)
 			.beginClass<Component>("Component")
 			.addConstructor<void(*)(void)>()
-			.addStaticFunction("property", &Component::Property)
+			.addStaticFunction("Property", &Component::Property)
 			.addData("entity", &Component::owner)
 			.endClass()
 			.deriveClass<Transform, Component>("Transform")
@@ -67,15 +70,27 @@ namespace RiverEngine
 		Component::AssignState(L);
 		Entity::AssignState(L);
 		Input::InitializeBindings();
-		testEntity = new Entity();
+		Entity* e = new Entity();
 		Sprite* sprite = new Sprite("cat.png");
+		e->AddComponent(sprite, "Sprite");
 		Sprite::addTexture("dog.png");
 		Sprite::addSprite(sprite, "cat.png");
-		testEntity->AddComponent(sprite, "Sprite");
 		Component* moveLeft = new Component();
-		testEntity->AddComponent(moveLeft, "MoveLeft");
+		e->AddComponent(moveLeft, "MoveLeft");
 		moveLeft->SetScript("moveLeft.lua");
 		moveLeft->Init();
+		Entity* c = new Entity();
+		Sprite* sprite2 = new Sprite("camera.png");
+		c->AddComponent(sprite2, "Sprite");
+		Sprite::addSprite(sprite2, "camera.png");
+		Component* cameraMove = new Component();
+		c->AddComponent(cameraMove, "CameraMove");
+		c->AddTag("Camera");
+		cameraMove->SetScript("cameraMove.lua");
+		cameraMove->Init();
+		Scene::SetActiveScene(new Scene());
+		Scene::AddEntity(e);
+		Scene::AddEntity(c);
 		return true;
 	}
 

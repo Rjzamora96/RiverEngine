@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "RenderableManager.h"
 #include "Sprite.h"
+#include "Transform.h"
 
 RiverEngine::ArrayList<Renderable*> RenderableManager::renderables = RiverEngine::ArrayList<Renderable*>();
 std::unordered_map<std::string, Texture*> RenderableManager::spriteMap;
@@ -31,6 +32,7 @@ void RenderableManager::AddSprite(RiverEngine::Sprite* sprite, std::string path)
 	r->sprite = sprite;
 	r->layer = 0.0f;
 	r->texture = spriteMap[path];
+	r->transform = sprite->owner->transform;
 	renderables.Add(r);
 }
 

@@ -190,6 +190,10 @@ namespace RiverEngine
 		static std::unordered_map<std::string, Keys> keyMap;
 		static void InitializeBindings();
 		static bool IsKeyDown(std::string key);
+		static bool IsKeyPressed(std::string key);
+		static bool IsKeyReleased(std::string key);
 		static BindPtr keyDown;
+		static BindPtr keyPressed;
+		static BindPtr keyReleased;
 	};
 }

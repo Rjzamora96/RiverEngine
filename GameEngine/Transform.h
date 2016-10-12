@@ -10,5 +10,6 @@ namespace RiverEngine
 		Transform() : position(new Vector2()), rotation(0) {}
 		Vector2* position;
 		float rotation;
+		float scale;
 	};
 }
