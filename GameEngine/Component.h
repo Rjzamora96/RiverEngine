@@ -19,7 +19,9 @@ namespace RiverEngine
 		Component();
 		~Component();
 		static void AssignState(luabridge::lua_State* l) { L = l; }
-		void SetName(const char* const name);
+		void SetName(std::string name) { m_name = name; }
+		std::string GetName() { return m_name; }
+		luabridge::LuaRef GetProperties() { return m_properties; }
 		void SetOwner(Entity* owner) { this->owner = owner; }
 		void SetScript(const std::string& script) { m_scriptPath = script; }
 		bool Init();
@@ -35,10 +37,9 @@ namespace RiverEngine
 		static void Break(bool condition = true, bool keepBreakable = true);
 		static void BreakIf(bool condition = true);
 		Entity* owner;
-		int test;
 	protected:
 		template <class T> T* GetSiblingComponent() { return owner->GetComponentByType<T>(); }
-		char m_name[MAX_NAME_LEN];
+		std::string m_name;
 		bool m_enabled = true;
 		std::shared_ptr<luabridge::LuaRef> updateFunc;
 	private:

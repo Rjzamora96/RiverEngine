@@ -4,6 +4,7 @@
 #include "Component.h"
 #include "Transform.h"
 #include "Sprite.h"
+#include "Input.h"
 
 #include "LuaBridge.h"
 #include "RefCountedPtr.h"
@@ -37,23 +38,38 @@ namespace RiverEngine
 			.addConstructor<void(*)(void)>()
 			.addData("x", &Vector2::x)
 			.addData("y", &Vector2::y)
-			.endClass()
+			.endClass();
+		getGlobalNamespace(L)
+			.beginClass<Input>("Input")
+			.addStaticFunction("isKeyDown", &Input::IsKeyDown)
+			.endClass();
+		getGlobalNamespace(L)
 			.beginClass<Component>("Component")
 			.addConstructor<void(*)(void)>()
-			.addStaticFunction("Property", &Component::Property)
+			.addStaticFunction("property", &Component::Property)
 			.addData("entity", &Component::owner)
 			.endClass()
 			.deriveClass<Transform, Component>("Transform")
 			.addData("rotation", &Transform::rotation)
 			.addData("position", &Transform::position)
-			.endClass()
+			.endClass();
+		getGlobalNamespace(L)
+			.deriveClass<Sprite, Component>("Sprite")
+			.addProperty("image", &Sprite::GetSprite, &Sprite::SetSprite)
+			.endClass();
+		getGlobalNamespace(L)
 			.beginClass<Entity>("Entity")
 			.addConstructor<void(*)(void)>()
 			.addData("transform", &Entity::transform)
+			.addData("sprite", &Entity::sprite)
+			.addFunction("getComponent", &Entity::GetComponent)
 			.endClass();
 		Component::AssignState(L);
+		Entity::AssignState(L);
+		Input::InitializeBindings();
 		testEntity = new Entity();
 		Sprite* sprite = new Sprite("cat.png");
+		Sprite::addTexture("dog.png");
 		Sprite::addSprite(sprite, "cat.png");
 		testEntity->AddComponent(sprite, "Sprite");
 		Component* moveLeft = new Component();

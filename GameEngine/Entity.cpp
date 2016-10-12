@@ -3,9 +3,11 @@
 #include <string.h>
 #include "Component.h"
 #include "Transform.h"
+#include "Sprite.h"
 
 namespace RiverEngine
 {
+	luabridge::lua_State* Entity::L;
 	Entity::Entity()
 	{
 		memset(m_components, 0, MAX_COMPONENTS * sizeof(m_components[0]));
@@ -34,6 +36,7 @@ namespace RiverEngine
 		{
 			if (!m_components[j])
 			{
+				if (typeid(*c) == typeid(Sprite)) sprite = static_cast<Sprite*>(c);
 				m_components[j] = c;
 				c->SetOwner(this);
 				c->SetName(name);
@@ -41,6 +44,15 @@ namespace RiverEngine
 			}
 		}
 		return true;
+	}
+
+	luabridge::LuaRef Entity::GetComponent(std::string name)
+	{
+		if (name.compare("Sprite") == 0) return luabridge::LuaRef(L, sprite);
+		for (int i = 0; i < MAX_COMPONENTS; i++)
+		{
+			if (name.compare(m_components[i]->GetName()) == 0) return m_components[i]->GetProperties();
+		}
 	}
 
 	bool Entity::Update(float dt)

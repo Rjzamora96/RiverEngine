@@ -15,7 +15,7 @@ namespace RiverEngine
 		static AddFunc addSprite;
 		static ChangeSprite changeSprite;
 		static AddTexture addTexture;
-		std::string GetSprite() { return m_sprite; }
+		std::string GetSprite() const { return m_sprite; }
 		void SetSprite(std::string path)
 		{
 			if (changeSprite != 0) changeSprite(this, path);

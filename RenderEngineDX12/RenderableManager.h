@@ -17,7 +17,6 @@ public:
 	static void Initialize();
 	static std::unordered_map<std::string, Texture*> spriteMap;
 	static RiverEngine::ArrayList<Renderable*> renderables;
-private:
-	static unsigned int m_spriteCount;
+	static unsigned int spriteCount;
 };
 

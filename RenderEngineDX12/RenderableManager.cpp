@@ -4,7 +4,7 @@
 
 RiverEngine::ArrayList<Renderable*> RenderableManager::renderables = RiverEngine::ArrayList<Renderable*>();
 std::unordered_map<std::string, Texture*> RenderableManager::spriteMap;
-unsigned int RenderableManager::m_spriteCount = 0;
+unsigned int RenderableManager::spriteCount = 0;
 
 RenderableManager::RenderableManager()
 {
@@ -20,10 +20,10 @@ void RenderableManager::AddSprite(RiverEngine::Sprite* sprite, std::string path)
 	if (existingTexture == 0)
 	{
 		Texture* t = new Texture();
-		t->id = m_spriteCount;
+		t->id = spriteCount;
 		t->texture = Microsoft::WRL::ComPtr<ID3D12Resource>();
 		spriteMap[path] = t;
-		m_spriteCount++;
+		spriteCount++;
 	}
 	Renderable* r = new Renderable();
 	r->id = renderables.Count();
@@ -51,10 +51,10 @@ void RenderableManager::AddTexture(std::string path)
 	if (existingTexture == 0)
 	{
 		Texture* t = new Texture();
-		t->id = m_spriteCount;
+		t->id = spriteCount;
 		t->texture = Microsoft::WRL::ComPtr<ID3D12Resource>();
 		spriteMap[path] = t;
-		m_spriteCount++;
+		spriteCount++;
 	}
 }
 

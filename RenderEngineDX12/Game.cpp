@@ -11,7 +11,7 @@
 #include "Vector2.h"
 #include "RenderableManager.h"
 #include "Texture.h"
-
+#include "InputManager.h"
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
@@ -39,8 +39,9 @@ void Game::Initialize(HWND window, int width, int height)
 	m_window = window;
 	m_outputWidth = std::max(width, 1);
 	m_outputHeight = std::max(height, 1);
-
+	m_offset = Vector2();
 	RenderableManager::Initialize();
+	InputManager::Initialize();
 
 	RiverEngine::Engine::Initialize();
 
@@ -71,6 +72,13 @@ void Game::Update(DX::StepTimer const& timer)
 {
     float elapsedTime = float(timer.GetElapsedSeconds());
 
+	UINT backBufferWidth = static_cast<UINT>(m_outputWidth);
+	UINT backBufferHeight = static_cast<UINT>(m_outputHeight);
+	D3D12_VIEWPORT viewport = { 0.0f + m_offset.x, 0.0f + m_offset.y,
+		static_cast<float>(backBufferWidth), static_cast<float>(backBufferHeight),
+		D3D12_MIN_DEPTH, D3D12_MAX_DEPTH };
+	m_spriteBatch->SetViewport(viewport);
+
 	RiverEngine::Engine::testEntity->Update(elapsedTime);
 
     // TODO: Add your game logic here.
@@ -95,7 +103,11 @@ void Game::Render()
 	ID3D12DescriptorHeap* heaps[] = { m_resourceDescriptors->Heap() };
 	m_commandList->SetDescriptorHeaps(_countof(heaps), heaps);
 
-	m_spriteBatch->Begin(m_commandList.Get());
+	XMMATRIX matrix(1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		m_offset.x, m_offset.y, 0.0f, 1.0f);
+	m_spriteBatch->Begin(m_commandList.Get(), SpriteSortMode_Deferred, matrix);
 	for (int i = 0; i < RenderableManager::renderables.Count(); i++)
 	{
 		RiverEngine::Vector2* vec = RiverEngine::Engine::testEntity->transform->position;
@@ -307,7 +319,7 @@ void Game::CreateDevice()
 	m_resourceDescriptors = std::make_unique<DescriptorHeap>(m_d3dDevice.Get(),
 		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
 		D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
-		Descriptors::Count);
+		RenderableManager::spriteCount);
 
 	ResourceUploadBatch resourceUpload(m_d3dDevice.Get());
 
@@ -477,7 +489,7 @@ void Game::CreateResources()
     m_d3dDevice->CreateDepthStencilView(m_depthStencil.Get(), &dsvDesc, m_dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 
     // TODO: Initialize windows-size dependent objects here.
-	D3D12_VIEWPORT viewport = { 0.0f, 0.0f,
+	D3D12_VIEWPORT viewport = { 100.0f, 100.0f,
 		static_cast<float>(backBufferWidth), static_cast<float>(backBufferHeight),
 		D3D12_MIN_DEPTH, D3D12_MAX_DEPTH };
 	m_spriteBatch->SetViewport(viewport);

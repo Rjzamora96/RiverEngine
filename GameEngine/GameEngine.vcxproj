@@ -166,6 +166,7 @@
     <ClInclude Include="detail\Userdata.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="Input.h" />
     <ClInclude Include="lapi.h" />
     <ClInclude Include="lauxlib.h" />
     <ClInclude Include="lcode.h" />
@@ -203,6 +204,7 @@
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="Input.cpp" />
     <ClCompile Include="lapi.c" />
     <ClCompile Include="lauxlib.c" />
     <ClCompile Include="lbaselib.c" />
@@ -240,7 +242,17 @@
     <ClCompile Include="lzio.c" />
     <ClCompile Include="Sprite.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\SDL.redist.1.2.15.16\build\native\SDL.redist.targets" Condition="Exists('..\packages\SDL.redist.1.2.15.16\build\native\SDL.redist.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\SDL.redist.1.2.15.16\build\native\SDL.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SDL.redist.1.2.15.16\build\native\SDL.redist.targets'))" />
+  </Target>
 </Project>

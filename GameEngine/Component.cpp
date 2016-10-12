@@ -8,7 +8,7 @@ namespace RiverEngine
 	luabridge::lua_State* Component::L;
 	Component* Component::activeComponent;
 
-	Component::Component() : updateFunc(nullptr)
+	Component::Component() : updateFunc(nullptr), m_scriptPath("")
 	{
 		owner = 0;
 	}
@@ -18,21 +18,10 @@ namespace RiverEngine
 	{
 	}
 
-	void Component::SetName(const char * const name)
-	{
-		for (int j = 0; j < MAX_NAME_LEN; ++j)
-		{
-			m_name[j] = name[j];
-			if (!name[j]) return;
-		}
-		m_name[-1] = 0;
-	}
-
 	bool Component::Init()
 	{
 		using namespace luabridge;
 		Component::activeComponent = this;
-		m_properties = newTable(L);
 		m_properties["entity"] = this->owner;
 		if (luaL_dofile(L, m_scriptPath.c_str()) == 0)
 		{
