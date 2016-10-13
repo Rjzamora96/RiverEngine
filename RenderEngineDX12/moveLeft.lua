@@ -2,9 +2,14 @@ Component.Property("speed", 100.0)
 
 local goingForward = true
 
+function Initialize(self)
+ 	self.entity.transform.position.y = 300.0
+	self.speed = 0
+end
+
 function Update(self, dt)
-	self.entity.transform.position.y = 300
 	self.entity.transform.rotation = self.entity.transform.rotation + dt
+	--self.entity.transform.position.y = 300.0
 	if Input.IsKeyReleased("Left") then
 		self.entity.sprite.image = "dog.png"
 	elseif Input.IsKeyPressed("Right") then
@@ -29,5 +34,16 @@ function Update(self, dt)
 			goingForward = true
 			self.entity.sprite.image = "cat.png"
 		end
+	end
+	if Input.IsKeyDown("Space") then
+		message = { amount = self.speed * dt }
+		self.entity:sendMessage("MoveUp", message, self)
+	end
+end
+
+function OnMessage(self, id, msg, sender)
+	if id == "MoveUp" then
+		self.entity.transform.position.y = self.entity.transform.position.y - msg.amount
+		sender.entity:getComponent("Sprite").image = "dog.png"
 	end
 end

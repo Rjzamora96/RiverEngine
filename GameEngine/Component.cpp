@@ -34,6 +34,24 @@ namespace RiverEngine
 			{
 				updateFunc.reset();
 			}
+			LuaRef initialize = getGlobal(L, "Initialize");
+			if (initialize.isFunction())
+			{
+				initializeFunc = std::make_shared<LuaRef>(initialize);
+			}
+			else
+			{
+				initializeFunc.reset();
+			}
+			LuaRef onMessage = getGlobal(L, "OnMessage");
+			if (onMessage.isFunction())
+			{
+				messageFunc = std::make_shared<LuaRef>(onMessage);
+			}
+			else
+			{
+				messageFunc.reset();
+			}
 		}
 		m_enabled = true;
 		bool result = Initialize();

@@ -46,6 +46,14 @@ namespace RiverEngine
 		return true;
 	}
 
+	void Entity::SendMessage(std::string id, luabridge::LuaRef message, luabridge::LuaRef sender)
+	{
+		for (int i = 0; i < MAX_COMPONENTS; i++)
+		{
+			if(m_components[i]) m_components[i]->OnMessage(id, message, sender);
+		}
+	}
+
 	luabridge::LuaRef Entity::GetComponent(std::string name)
 	{
 		if (name.compare("Sprite") == 0) return luabridge::LuaRef(L, sprite);

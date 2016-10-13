@@ -25,6 +25,7 @@ namespace RiverEngine
 		bool AddComponent(Component* c, const char* const name);
 		void AddTag(std::string tag) { m_tags.Add(tag); }
 		bool HasTag(std::string tag) { for (int i = 0; i < m_tags.Count(); i++) if (m_tags[i].compare(tag) == 0) return true; return false; }
+		void SendMessage(std::string id, luabridge::LuaRef message, luabridge::LuaRef sender);
 		template <class T> T* GetComponentByType() const;
 		luabridge::LuaRef GetComponent(std::string name);
 		Transform* transform;

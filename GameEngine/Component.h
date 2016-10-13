@@ -27,7 +27,8 @@ namespace RiverEngine
 		bool Init();
 		virtual bool Update(float dt) { if (updateFunc) (*updateFunc)(m_properties, dt); return true; }
 		virtual bool Draw() { return true; }
-		virtual bool Initialize() { return true; }
+		virtual bool Initialize() { if (initializeFunc) (*initializeFunc)(m_properties); return true; }
+		virtual void OnMessage(std::string id, luabridge::LuaRef message, luabridge::LuaRef sender) { if (messageFunc) (*messageFunc)(m_properties, id, message, sender); }
 		void Enable(bool enabled = true) { m_enabled = enabled; }
 		bool IsEnabled() const { return m_enabled; }
 		bool IsDisabled() const { return !m_enabled; }
@@ -41,7 +42,9 @@ namespace RiverEngine
 		template <class T> T* GetSiblingComponent() { return owner->GetComponentByType<T>(); }
 		std::string m_name;
 		bool m_enabled = true;
+		std::shared_ptr<luabridge::LuaRef> initializeFunc;
 		std::shared_ptr<luabridge::LuaRef> updateFunc;
+		std::shared_ptr<luabridge::LuaRef> messageFunc;
 	private:
 		static bool s_breakable;
 		static luabridge::lua_State* L;

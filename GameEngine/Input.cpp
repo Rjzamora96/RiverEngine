@@ -17,6 +17,7 @@ namespace RiverEngine
 		keyMap["S"] = Keys::S;
 		keyMap["A"] = Keys::A;
 		keyMap["D"] = Keys::D;
+		keyMap["Space"] = Keys::Space;
 	}
 
 	bool Input::IsKeyDown(std::string key)
