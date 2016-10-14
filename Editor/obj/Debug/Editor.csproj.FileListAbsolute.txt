@@ -1,0 +1,14 @@
+C:\Users\Jacob Zamora\RiverEngine\Editor\bin\Debug\Editor.exe.config
+C:\Users\Jacob Zamora\RiverEngine\Editor\bin\Debug\Editor.exe
+C:\Users\Jacob Zamora\RiverEngine\Editor\bin\Debug\Editor.pdb
+C:\Users\Jacob Zamora\RiverEngine\Editor\obj\Debug\Editor.csprojResolveAssemblyReference.cache
+C:\Users\Jacob Zamora\RiverEngine\Editor\obj\Debug\MainWindow.g.cs
+C:\Users\Jacob Zamora\RiverEngine\Editor\obj\Debug\App.g.cs
+C:\Users\Jacob Zamora\RiverEngine\Editor\obj\Debug\Editor_MarkupCompile.cache
+C:\Users\Jacob Zamora\RiverEngine\Editor\obj\Debug\Editor_MarkupCompile.lref
+C:\Users\Jacob Zamora\RiverEngine\Editor\obj\Debug\MainWindow.baml
+C:\Users\Jacob Zamora\RiverEngine\Editor\obj\Debug\Editor.g.resources
+C:\Users\Jacob Zamora\RiverEngine\Editor\obj\Debug\Editor.Properties.Resources.resources
+C:\Users\Jacob Zamora\RiverEngine\Editor\obj\Debug\Editor.csproj.GenerateResource.Cache
+C:\Users\Jacob Zamora\RiverEngine\Editor\obj\Debug\Editor.exe
+C:\Users\Jacob Zamora\RiverEngine\Editor\obj\Debug\Editor.pdb
