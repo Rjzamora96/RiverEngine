@@ -21,13 +21,15 @@ namespace Editor
         public TextEditor() : base()
         {
             _textBox = new TextBox();
-            _textBox.TextWrapping = System.Windows.TextWrapping.Wrap;
+            _textBox.TextWrapping = System.Windows.TextWrapping.NoWrap;
             _textBox.AcceptsReturn = true;
             _textBox.AcceptsTab = true;
             _textBox.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#252525"));
             _textBox.Foreground = new SolidColorBrush(Colors.White);
             _textBox.FontFamily = new FontFamily("Comic Sans MS");
             _textBox.FontSize = 12;
+            _textBox.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+            _textBox.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
             Content = _textBox;
             Header = "Script";
         }

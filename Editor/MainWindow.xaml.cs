@@ -36,7 +36,27 @@ namespace Editor
             {
                 activeEditor = new TextEditor();
                 activeEditor.OpenFile(openFileDialog.FileName);
-                activeEditor.Header = openFileDialog.SafeFileName;
+                Grid headerContainer = new Grid();
+                headerContainer.ColumnDefinitions.Add(new ColumnDefinition());
+                headerContainer.ColumnDefinitions.Add(new ColumnDefinition());
+                Button closeButton = new Button();
+                closeButton.Content = "x";
+                closeButton.Width = 20;
+                closeButton.Height = 20;
+                closeButton.Padding = new Thickness(0);
+                closeButton.VerticalAlignment = VerticalAlignment.Center;
+                closeButton.VerticalContentAlignment = VerticalAlignment.Center;
+                closeButton.HorizontalContentAlignment = HorizontalAlignment.Center;
+                closeButton.FontSize = 12;
+                Label panelLabel = new Label();
+                panelLabel.Content = openFileDialog.SafeFileName;
+                Grid.SetColumn(panelLabel, 0);
+                Grid.SetRow(panelLabel, 0);
+                Grid.SetColumn(closeButton, 1);
+                Grid.SetRow(closeButton, 0);
+                headerContainer.Children.Add(closeButton);
+                headerContainer.Children.Add(panelLabel);
+                activeEditor.Header = headerContainer;
                 editorTabs.Items.Add(activeEditor);
                 editorTabs.SelectedItem = activeEditor;
             }
