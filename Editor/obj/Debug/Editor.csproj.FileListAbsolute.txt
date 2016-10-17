@@ -12,3 +12,17 @@ C:\Users\Jacob Zamora\RiverEngine\Editor\obj\Debug\Editor.Properties.Resources.r
 C:\Users\Jacob Zamora\RiverEngine\Editor\obj\Debug\Editor.csproj.GenerateResource.Cache
 C:\Users\Jacob Zamora\RiverEngine\Editor\obj\Debug\Editor.exe
 C:\Users\Jacob Zamora\RiverEngine\Editor\obj\Debug\Editor.pdb
+D:\RiverEngine\Editor\bin\Debug\Editor.exe.config
+D:\RiverEngine\Editor\obj\Debug\Editor.pdb
+D:\RiverEngine\Editor\bin\Debug\Editor.exe
+D:\RiverEngine\Editor\bin\Debug\Editor.pdb
+D:\RiverEngine\Editor\obj\Debug\Editor.csprojResolveAssemblyReference.cache
+D:\RiverEngine\Editor\obj\Debug\MainWindow.g.cs
+D:\RiverEngine\Editor\obj\Debug\App.g.cs
+D:\RiverEngine\Editor\obj\Debug\Editor_MarkupCompile.cache
+D:\RiverEngine\Editor\obj\Debug\Editor_MarkupCompile.lref
+D:\RiverEngine\Editor\obj\Debug\MainWindow.baml
+D:\RiverEngine\Editor\obj\Debug\Editor.g.resources
+D:\RiverEngine\Editor\obj\Debug\Editor.Properties.Resources.resources
+D:\RiverEngine\Editor\obj\Debug\Editor.csproj.GenerateResource.Cache
+D:\RiverEngine\Editor\obj\Debug\Editor.exe

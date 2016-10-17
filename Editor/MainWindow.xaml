@@ -5,13 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Editor"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="600" Width="800">
     <DockPanel>
         <ToolBarTray DockPanel.Dock="Top">
             <ToolBar>
-                <Button Command="New" Content="New" />
-                <Button Command="Open" Content="Open" />
-                <Button Command="Save" Content="Save" />
+                <Button Click="NewFile" Content="New" />
+                <Button Click="OpenFile" Content="Open" />
+                <Button Click="SaveFile" Content="Save" />
             </ToolBar>
             <ToolBar>
                 <Button Command="Cut" Content="Cut" />
@@ -21,21 +21,34 @@
         </ToolBarTray>
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="200"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="200"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="100"/>
             </Grid.RowDefinitions>
-            <TextBox Grid.Row="0" Grid.Column="0" x:Name="textBlock" Margin="3" TextWrapping="Wrap" Text="TextBlock"  AcceptsReturn="True" AcceptsTab="True"/>
             <GridSplitter HorizontalAlignment="Right" 
                   VerticalAlignment="Stretch" 
                   Grid.Column="1" ResizeBehavior="PreviousAndNext"
                   Width="5" Background="#FFBCBCBC"/>
-            <StackPanel Grid.Column="2" Grid.Row="0">
-                <Label x:Name="NameL" Content="Hello"/>
+            <GridSplitter HorizontalAlignment="Right" 
+                  VerticalAlignment="Stretch" 
+                  Grid.Column="3" ResizeBehavior="PreviousAndNext"
+                  Width="5" Background="#FFBCBCBC"/>
+            <GridSplitter VerticalAlignment="Top"
+                  HorizontalAlignment="Stretch" 
+                  Grid.Row="1" Grid.ColumnSpan="5" ResizeBehavior="PreviousAndNext"
+                  Height="5" Background="#FFBCBCBC"/>
+            <TabControl x:Name="editorTabs" Grid.Row="0" Grid.Column="2" Margin="3">
 
+            </TabControl>
+            <StackPanel Grid.Column="4" Grid.Row="0">
+                <Label x:Name="NameL" Content="Hello"/>
             </StackPanel>
         </Grid>
     </DockPanel>

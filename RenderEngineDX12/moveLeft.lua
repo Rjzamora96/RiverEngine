@@ -9,7 +9,6 @@ end
 
 function Update(self, dt)
 	self.entity.transform.rotation = self.entity.transform.rotation + dt
-	--self.entity.transform.position.y = 300.0
 	if Input.IsKeyReleased("Left") then
 		self.entity.sprite.image = "dog.png"
 	elseif Input.IsKeyPressed("Right") then
