@@ -30,7 +30,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="100"/>
+                <RowDefinition Height="150"/>
             </Grid.RowDefinitions>
             <GridSplitter HorizontalAlignment="Right" 
                   VerticalAlignment="Stretch" 
@@ -50,6 +50,20 @@
             <StackPanel Grid.Column="4" Grid.Row="0">
                 <Label x:Name="NameL" Content="Hello"/>
             </StackPanel>
+            <Grid Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Label x:Name="AssetL" Content="Assets" Grid.Column="0" Grid.Row="0"/>
+                <ListBox x:Name="assetDisplay" Grid.Column="0" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel IsItemsHost="True" Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                </ListBox>
+            </Grid>
         </Grid>
     </DockPanel>
 </Window>

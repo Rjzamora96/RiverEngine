@@ -22,10 +22,18 @@ namespace Editor
     /// </summary>
     public partial class MainWindow : Window
     {
-        TextEditor activeEditor;
         public MainWindow()
         {
             InitializeComponent();
+            DirectoryInfo dir = new DirectoryInfo("..\\..\\..\\RenderEngineDX12");
+            IEnumerable<FileInfo> files = dir.EnumerateFiles();
+            foreach(FileInfo file in files)
+            {
+                if (file.Extension != ".lua") continue;
+                AssetItem item = new AssetItem(file);
+                item.EditorTabs = editorTabs;
+                assetDisplay.Items.Add(item);
+            }
         }
 
         private void OpenFile(object sender, RoutedEventArgs e)
@@ -34,7 +42,7 @@ namespace Editor
             openFileDialog.Filter = "Script files (*.lua)|*.lua";
             if (openFileDialog.ShowDialog() == true)
             {
-                activeEditor = new TextEditor();
+                TextEditor activeEditor = new TextEditor();
                 activeEditor.OpenFile(openFileDialog.FileName);
                 Grid headerContainer = new Grid();
                 headerContainer.ColumnDefinitions.Add(new ColumnDefinition());
@@ -48,6 +56,7 @@ namespace Editor
                 closeButton.VerticalContentAlignment = VerticalAlignment.Center;
                 closeButton.HorizontalContentAlignment = HorizontalAlignment.Center;
                 closeButton.FontSize = 12;
+                closeButton.Click += CloseTab;
                 Label panelLabel = new Label();
                 panelLabel.Content = openFileDialog.SafeFileName;
                 Grid.SetColumn(panelLabel, 0);
@@ -61,9 +70,17 @@ namespace Editor
                 editorTabs.SelectedItem = activeEditor;
             }
         }
-
+        private void CloseTab(object sender, RoutedEventArgs e)
+        {
+            var target = (FrameworkElement)sender;
+            while (!(target is TabItem)) target = (FrameworkElement)target.Parent;
+            TabItem tabItem = (TabItem)target;
+            tabItem.Template = null;
+            editorTabs.Items.Remove(tabItem);
+        }
         private void SaveFile(object sender, RoutedEventArgs e)
         {
+            TextEditor activeEditor = (TextEditor)editorTabs.SelectedItem;
             activeEditor.SaveFile();
         }
 
@@ -74,7 +91,7 @@ namespace Editor
             if(saveFileDialog.ShowDialog() == true)
             {
                 File.WriteAllText(saveFileDialog.FileName, "");
-                activeEditor = new TextEditor();
+                TextEditor activeEditor = new TextEditor();
                 activeEditor.OpenFile(saveFileDialog.FileName);
             }
         }
