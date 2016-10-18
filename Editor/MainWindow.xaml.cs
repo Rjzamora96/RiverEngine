@@ -25,9 +25,15 @@ namespace Editor
         public MainWindow()
         {
             InitializeComponent();
+            UpdateAssetDisplay();
+        }
+
+        private void UpdateAssetDisplay()
+        {
+            assetDisplay.Items.Clear();
             DirectoryInfo dir = new DirectoryInfo("..\\..\\..\\RenderEngineDX12");
             IEnumerable<FileInfo> files = dir.EnumerateFiles();
-            foreach(FileInfo file in files)
+            foreach (FileInfo file in files)
             {
                 if (file.Extension != ".lua") continue;
                 AssetItem item = new AssetItem(file);
@@ -93,6 +99,7 @@ namespace Editor
                 File.WriteAllText(saveFileDialog.FileName, "");
                 TextEditor activeEditor = new TextEditor();
                 activeEditor.OpenFile(saveFileDialog.FileName);
+                UpdateAssetDisplay();
             }
         }
     }

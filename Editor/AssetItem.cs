@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
 namespace Editor
@@ -13,6 +14,7 @@ namespace Editor
     public class AssetItem : ListBoxItem
     {
         private FileInfo _file;
+        private TextBox _fileName;
         public TabControl EditorTabs { get; set; }
         public AssetItem(FileInfo file) : base()
         {
@@ -27,10 +29,30 @@ namespace Editor
             fileName.IsReadOnly = true;
             fileName.Text = System.IO.Path.GetFileNameWithoutExtension(file.Name);
             fileName.HorizontalAlignment = HorizontalAlignment.Center;
+            fileName.KeyDown += SubmitRename;
+            _fileName = fileName;
             content.Children.Add(fileImage);
             content.Children.Add(fileName);
             Content = content;
             MouseDoubleClick += OpenScript;
+            ContextMenu cm = new ContextMenu();
+            MenuItem menuItem = new MenuItem();
+            menuItem.Header = "Rename";
+            menuItem.Click += RenameFile;
+            cm.Items.Add(menuItem);
+            ContextMenu = cm;
+        }
+
+        private void SubmitRename(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Enter)
+            {
+                File.Move(_file.Name, _fileName.Text);
+            }
+        }
+        private void RenameFile(object sender, EventArgs e)
+        {
+            _fileName.IsReadOnly = false;
         }
 
         public void OpenScript(object sender, RoutedEventArgs e)

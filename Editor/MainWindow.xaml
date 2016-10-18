@@ -44,6 +44,16 @@
                   HorizontalAlignment="Stretch" 
                   Grid.Row="1" Grid.ColumnSpan="5" ResizeBehavior="PreviousAndNext"
                   Height="5" Background="#FFBCBCBC"/>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Label Content="Scene" Grid.Column="0" Grid.Row="0"/>
+                <ListBox x:Name="sceneDisplay" Grid.Column="0" Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                    
+                </ListBox>
+            </Grid>
             <TabControl x:Name="editorTabs" Grid.Row="0" Grid.Column="2" Margin="3">
 
             </TabControl>
