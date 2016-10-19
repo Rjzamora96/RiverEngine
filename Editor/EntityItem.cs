@@ -9,11 +9,19 @@ namespace Editor
 {
     public class EntityItem : ListBoxItem
     {
+        Label nameLabel;
+        public string Name { get { return _name } set { _name = value; nameLabel.Content = _name; } }
+        private string _name;
         public EntityItem() : base()
         {
-            Label name = new Label();
-            name.Content = "Entity";
-            Content = name;
+            nameLabel = new Label();
+            Name = "Entity";
+            Content = nameLabel;
+            ContextMenu cm = new ContextMenu();
+            MenuItem rename = new MenuItem();
+            rename.Header = "Rename";
+            cm.Items.Add(rename);
+            ContextMenu = cm;
         }
     }
 }

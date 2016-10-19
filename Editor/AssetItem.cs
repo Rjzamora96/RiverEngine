@@ -51,6 +51,7 @@ namespace Editor
                 _file = new FileInfo(_file.DirectoryName + "//" + _fileName.Text + _file.Extension);
             }
         }
+
         private void RenameFile(object sender, EventArgs e)
         {
             _fileName.IsReadOnly = false;
