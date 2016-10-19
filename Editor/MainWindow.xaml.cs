@@ -26,6 +26,18 @@ namespace Editor
         {
             InitializeComponent();
             UpdateAssetDisplay();
+            ContextMenu cm = new ContextMenu();
+            MenuItem create = new MenuItem();
+            create.Header = "Create Entity";
+            create.Click += CreateEntity;
+            cm.Items.Add(create);
+            sceneDisplay.ContextMenu = cm;
+        }
+
+        private void CreateEntity(object sender, EventArgs e)
+        {
+            EntityItem entity = new EntityItem();
+            sceneDisplay.Items.Add(entity);
         }
 
         private void UpdateAssetDisplay()

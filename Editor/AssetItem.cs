@@ -47,12 +47,14 @@ namespace Editor
         {
             if(e.Key == Key.Enter)
             {
-                File.Move(_file.Name, _fileName.Text);
+                File.Move(_file.FullName, _file.DirectoryName + "//" + _fileName.Text + _file.Extension);
+                _file = new FileInfo(_file.DirectoryName + "//" + _fileName.Text + _file.Extension);
             }
         }
         private void RenameFile(object sender, EventArgs e)
         {
             _fileName.IsReadOnly = false;
+            Keyboard.Focus(_fileName);
         }
 
         public void OpenScript(object sender, RoutedEventArgs e)
