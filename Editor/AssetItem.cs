@@ -27,7 +27,7 @@ namespace Editor
             fileName.BorderThickness = new Thickness(0);
             fileName.TextWrapping = TextWrapping.Wrap;
             fileName.IsReadOnly = true;
-            fileName.Text = System.IO.Path.GetFileNameWithoutExtension(file.Name);
+            fileName.Text = Path.GetFileNameWithoutExtension(file.Name);
             fileName.HorizontalAlignment = HorizontalAlignment.Center;
             fileName.KeyDown += SubmitRename;
             _fileName = fileName;
@@ -41,8 +41,16 @@ namespace Editor
             menuItem.Click += RenameFile;
             cm.Items.Add(menuItem);
             ContextMenu = cm;
+            MouseMove += MoveAsset;
         }
-
+        private void MoveAsset(object sender, MouseEventArgs e)
+        {
+            AssetItem item = sender as AssetItem;
+            if(item != null && e.LeftButton == MouseButtonState.Pressed)
+            {
+                DragDrop.DoDragDrop(item, _file, DragDropEffects.All);
+            }
+        }
         private void SubmitRename(object sender, KeyEventArgs e)
         {
             if(e.Key == Key.Enter)

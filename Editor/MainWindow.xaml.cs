@@ -22,8 +22,10 @@ namespace Editor
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static MainWindow Window { get; set; }
         public MainWindow()
         {
+            MainWindow.Window = this;
             InitializeComponent();
             UpdateAssetDisplay();
             ContextMenu cm = new ContextMenu();
