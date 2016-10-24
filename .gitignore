@@ -35,3 +35,5 @@
 /RenderEngineDX12/Debug
 /*.db
 /GameEngine/Debug
+obj
+bin
