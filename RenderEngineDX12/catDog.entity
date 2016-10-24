@@ -1,0 +1,7 @@
+entity = {
+	{
+		script = "moveLeft.lua",
+		componentName = "moveLeft",
+		speed = 100.0
+	}
+}

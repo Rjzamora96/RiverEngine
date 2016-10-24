@@ -66,5 +66,8 @@
     <None Include="cameraMove.lua">
       <Filter>Assets</Filter>
     </None>
+    <None Include="catDog.entity">
+      <Filter>Assets</Filter>
+    </None>
   </ItemGroup>
 </Project>

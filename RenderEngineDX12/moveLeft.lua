@@ -1,10 +1,9 @@
-Component.Property("speed", 100.0)
+Component.Property("speed", 0.0)
 
 local goingForward = true
 
 function Initialize(self)
  	self.entity.transform.position.y = 300.0
-	self.speed = 0
 end
 
 function Update(self, dt)

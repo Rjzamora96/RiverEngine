@@ -33,7 +33,7 @@ namespace RiverEngine
 	template <class T>
 	void ArrayList<T>::Add(T t)
 	{
-		if (m_count == m_size - 1)
+		if (m_count == m_size)
 		{
 			T* temp = new T[m_size * 2];
 			for (int i = 0; i < m_size; i++)

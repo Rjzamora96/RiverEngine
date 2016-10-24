@@ -28,6 +28,7 @@ namespace RiverEngine
 		void SendMessage(std::string id, luabridge::LuaRef message, luabridge::LuaRef sender);
 		template <class T> T* GetComponentByType() const;
 		luabridge::LuaRef GetComponent(std::string name);
+		void LoadComponents(std::string script);
 		Transform* transform;
 		Sprite* sprite;
 		bool Update(float dt);

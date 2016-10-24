@@ -76,10 +76,11 @@ namespace RiverEngine
 		e->AddComponent(sprite, "Sprite");
 		Sprite::addTexture("dog.png");
 		Sprite::addSprite(sprite, "cat.png");
-		Component* moveLeft = new Component();
-		e->AddComponent(moveLeft, "MoveLeft");
-		moveLeft->SetScript("moveLeft.lua");
-		moveLeft->Init();
+		e->LoadComponents("Steve.entity");
+		//Component* moveLeft = new Component();
+		//e->AddComponent(moveLeft, "MoveLeft");
+		//moveLeft->SetScript("moveLeft.lua");
+		//moveLeft->Init();
 		Entity* c = new Entity();
 		Sprite* sprite2 = new Sprite("camera.png");
 		c->AddComponent(sprite2, "Sprite");

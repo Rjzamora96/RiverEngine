@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -34,8 +35,75 @@ namespace Editor
             create.Click += CreateEntity;
             cm.Items.Add(create);
             sceneDisplay.ContextMenu = cm;
+            assetDisplay.AllowDrop = true;
+            assetDisplay.Drop += DropEntity;
+            sceneDisplay.AllowDrop = true;
+            sceneDisplay.Drop += DropPrefab;
         }
-
+        private void DropPrefab(object sender, DragEventArgs e)
+        {
+            ListBox sceneBox = sender as ListBox;
+            if (sceneBox != null)
+            {
+                if(e.Data.GetDataPresent(typeof(FileInfo)))
+                {
+                    FileInfo file = (FileInfo)e.Data.GetData(typeof(FileInfo));
+                    if(file != null)
+                    {
+                        if(file.Extension.Equals(".entity"))
+                        {
+                            EntityItem entity = new EntityItem();
+                            sceneDisplay.Items.Add(entity);
+                            string entityScript = File.ReadAllText(file.FullName);
+                            Match match = Regex.Match(entityScript, "{(.*)}");
+                            Group compGroup = match.Groups[1];  //AllComponents
+                            string compString = compGroup.ToString();
+                            int level = 0;
+                            List<string> componentStrings = new List<string>();
+                            string propertyString = "";
+                            for(int i = 0; i < compString.Length; i++)
+                            {
+                                if (compString[i].Equals('{')) level++;
+                                else if(compString[i].Equals('}')) level--;
+                                propertyString += compString[i];
+                                if(level == 0)
+                                {
+                                    componentStrings.Add(propertyString);
+                                    propertyString = "";
+                                }
+                            }
+                            for(int i = 0; i < componentStrings.Count; i++)
+                            {
+                                string current = componentStrings[i];
+                                Match scriptMatch = Regex.Match(current, "script=\"(.*?)\"");
+                                if (scriptMatch != null)
+                                {
+                                    FileInfo compFile = new FileInfo("..\\..\\..\\RenderEngineDX12\\" + scriptMatch.Groups[1].ToString());
+                                    entity.Editor.AddComponent(compFile);
+                                }
+                            }
+                            //{(?>[^{}]+|(?R))*}
+                        }
+                    }
+                }
+            }
+        }
+        private void DropEntity(object sender, DragEventArgs e)
+        {
+            ListBox assetBox = sender as ListBox;
+            if (assetBox != null)
+            {
+                if (e.Data.GetDataPresent(typeof(EntityItem)))
+                {
+                    EntityItem entity = (EntityItem)e.Data.GetData(typeof(EntityItem));
+                    if(entity != null)
+                    {
+                        File.WriteAllText("..\\..\\..\\RenderEngineDX12\\" + entity.EName + ".entity", entity.ToString());
+                        UpdateAssetDisplay();
+                    }
+                }
+            }
+        }
         private void CreateEntity(object sender, EventArgs e)
         {
             EntityItem entity = new EntityItem();
@@ -49,7 +117,7 @@ namespace Editor
             IEnumerable<FileInfo> files = dir.EnumerateFiles();
             foreach (FileInfo file in files)
             {
-                if (file.Extension != ".lua") continue;
+                if (file.Extension != ".lua" && file.Extension != ".entity") continue;
                 AssetItem item = new AssetItem(file);
                 item.EditorTabs = editorTabs;
                 assetDisplay.Items.Add(item);

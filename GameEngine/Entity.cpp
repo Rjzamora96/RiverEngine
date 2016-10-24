@@ -4,7 +4,7 @@
 #include "Component.h"
 #include "Transform.h"
 #include "Sprite.h"
-
+#include "LuaBridge.h"
 namespace RiverEngine
 {
 	luabridge::lua_State* Entity::L;
@@ -60,6 +60,42 @@ namespace RiverEngine
 		for (int i = 0; i < MAX_COMPONENTS; i++)
 		{
 			if (name.compare(m_components[i]->GetName()) == 0) return m_components[i]->GetProperties();
+		}
+	}
+
+	void Entity::LoadComponents(std::string script)
+	{
+		using namespace luabridge;
+		if (luaL_dofile(L, script.c_str()) == 0)
+		{
+			LuaRef table = getGlobal(L, "entity");
+			int tableLen = table.length();
+			for (int i = 1; i <= table.length(); ++i)
+			{
+				Component* c = new Component();
+				LuaRef subTable = table[i];
+				if (subTable["script"].isString())
+				{
+					c->SetScript(subTable["script"]);
+				}
+				if (subTable["componentName"].isString())
+				{
+					AddComponent(c, subTable["componentName"]);
+				}
+				c->Init();
+				ArrayList<std::string> keyList = c->GetKeyList();
+				LuaRef properties = c->GetProperties();
+				for (int j = 0; j < keyList.Count(); ++j)
+				{
+					std::string key = keyList[j];
+					if (!subTable[key].isNil())
+					{
+						LuaRef value = subTable[key];
+						properties[key] = value;
+					}
+					//subTable[key];
+				}
+			}
 		}
 	}
 

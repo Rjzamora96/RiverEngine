@@ -24,6 +24,7 @@ namespace RiverEngine
 		luabridge::LuaRef GetProperties() { return m_properties; }
 		void SetOwner(Entity* owner) { this->owner = owner; }
 		void SetScript(const std::string& script) { m_scriptPath = script; }
+		ArrayList<std::string> GetKeyList() { return m_keyList; }
 		bool Init();
 		virtual bool Update(float dt) { if (updateFunc) (*updateFunc)(m_properties, dt); return true; }
 		virtual bool Draw() { return true; }
@@ -32,7 +33,7 @@ namespace RiverEngine
 		void Enable(bool enabled = true) { m_enabled = enabled; }
 		bool IsEnabled() const { return m_enabled; }
 		bool IsDisabled() const { return !m_enabled; }
-		static void Property(const std::string& name, luabridge::LuaRef value) { activeComponent->m_properties[name] = value; }
+		static void Property(std::string name, luabridge::LuaRef value) { activeComponent->m_properties[name] = value; activeComponent->m_keyList.Add(name); }
 		static void SetBreak(bool enabled = true);
 		static void ToggleBreak() { s_breakable = !s_breakable; }
 		static void Break(bool condition = true, bool keepBreakable = true);
@@ -49,6 +50,7 @@ namespace RiverEngine
 		static bool s_breakable;
 		static luabridge::lua_State* L;
 		static Component* activeComponent;
+		ArrayList<std::string> m_keyList;
 		luabridge::LuaRef m_properties = luabridge::newTable(L);
 		std::string m_scriptPath;
 	};

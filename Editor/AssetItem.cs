@@ -22,7 +22,8 @@ namespace Editor
             Width = 100;
             StackPanel content = new StackPanel();
             Image fileImage = new Image();
-            fileImage.Source = new BitmapImage(new Uri("lua-icon.png", UriKind.Relative));
+            if (_file.Extension.Equals(".lua")) fileImage.Source = new BitmapImage(new Uri("lua-icon.png", UriKind.Relative));
+            else if (_file.Extension.Equals(".entity")) fileImage.Source = new BitmapImage(new Uri("entity-icon.ico", UriKind.Relative));
             TextBox fileName = new TextBox();
             fileName.BorderThickness = new Thickness(0);
             fileName.TextWrapping = TextWrapping.Wrap;

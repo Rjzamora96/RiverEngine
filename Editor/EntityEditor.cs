@@ -18,6 +18,7 @@ namespace Editor
         private class PropertyLine : Grid
         {
             public TextBox Text { get; set; }
+            public ComponentProperty Bound { get; set; }
             public PropertyLine(string name) : base()
             {
                 ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(75.0) });
@@ -30,6 +31,11 @@ namespace Editor
                 Text.VerticalContentAlignment = VerticalAlignment.Center;
                 Grid.SetColumn(Text, 1);
                 Children.Add(Text);
+                Text.TextChanged += UpdateBound;
+            }
+            private void UpdateBound(object sender, RoutedEventArgs e)
+            {
+                if (Bound != null) Bound.Value = Text.Text;
             }
         }
         private PropertyLine _nameLine;
@@ -62,6 +68,31 @@ namespace Editor
             AllowDrop = true;
             Drop += DropComponent;
         }
+        public void AddComponent(FileInfo file)
+        {
+            ComponentItem component = new ComponentItem();
+            component.Name = Path.GetFileNameWithoutExtension(file.Name);
+            component.Script = file.Name;
+            component.Properties = new List<ComponentProperty>();
+            _entityProperties.RowDefinitions.Add(new RowDefinition { Height = new GridLength(0.0, GridUnitType.Auto) });
+            Label compName = new Label();
+            compName.Content = component.Name;
+            Grid.SetRow(compName, _entityProperties.Children.Count);
+            _entityProperties.Children.Add(compName);
+            MatchCollection propertyMatches = Regex.Matches(File.ReadAllText(file.FullName), "Component\\.Property\\(\"(.+)\",(.+)\\)");
+            foreach (Match match in propertyMatches)
+            {
+                _entityProperties.RowDefinitions.Add(new RowDefinition { Height = new GridLength(0.0, GridUnitType.Auto) });
+                PropertyLine line = new PropertyLine(match.Groups[1].ToString() + ": ");
+                line.Text.Text = match.Groups[2].ToString().TrimStart();
+                Grid.SetRow(line, _entityProperties.Children.Count);
+                _entityProperties.Children.Add(line);
+                ComponentProperty compProperty = new ComponentProperty(match.Groups[1].ToString(), match.Groups[2].ToString().TrimStart());
+                line.Bound = compProperty;
+                component.Properties.Add(compProperty);
+                Owner.Components.Add(component);
+            }
+        }
         private void DropComponent(object sender, DragEventArgs e)
         {
             EntityEditor editor = sender as EntityEditor;
@@ -72,20 +103,7 @@ namespace Editor
                     FileInfo file = (FileInfo)e.Data.GetData(typeof(FileInfo));
                     if(file.Extension == ".lua")
                     {
-                        _entityProperties.RowDefinitions.Add(new RowDefinition { Height = new GridLength(0.0, GridUnitType.Auto) });
-                        Label compName = new Label();
-                        compName.Content = Path.GetFileNameWithoutExtension(file.Name);
-                        Grid.SetRow(compName, _entityProperties.Children.Count);
-                        _entityProperties.Children.Add(compName);
-                        MatchCollection propertyMatches = Regex.Matches(File.ReadAllText(file.FullName), "Component\\.Property\\(\"(.+)\",(.+)\\)");
-                        foreach (Match match in propertyMatches)
-                        {
-                            _entityProperties.RowDefinitions.Add(new RowDefinition { Height = new GridLength(0.0, GridUnitType.Auto) });
-                            PropertyLine line = new PropertyLine(match.Groups[1].ToString() + ": ");
-                            line.Text.Text = match.Groups[2].ToString().TrimStart();
-                            Grid.SetRow(line, _entityProperties.Children.Count);
-                            _entityProperties.Children.Add(line);
-                        }
+                        AddComponent(file);
                     }
                 }
             }

@@ -203,6 +203,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="cameraMove.lua" />
+    <None Include="catDog.entity" />
     <None Include="moveLeft.lua" />
     <None Include="packages.config" />
     <None Include="Test.lua" />
