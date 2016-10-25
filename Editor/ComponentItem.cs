@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Editor
@@ -22,6 +23,20 @@ namespace Editor
             }
             result += "}";
             return result;
+        }
+        public void SetProperties(List<string> strings)
+        {
+            for(int i = 0; i < Properties.Count; i++)
+            {
+                for(int j = 0; j < strings.Count; j++)
+                {
+                    Match match = Regex.Match(strings[j], Properties[i].Name + "=(.*)");
+                    if (match != null)
+                    {
+                        Properties[i].Value = match.Groups[1].ToString();
+                    }
+                }
+            }
         }
     }
 }

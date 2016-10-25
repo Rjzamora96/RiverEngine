@@ -14,7 +14,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Editor
 {
@@ -24,9 +23,11 @@ namespace Editor
     public partial class MainWindow : Window
     {
         public static MainWindow Window { get; set; }
+        public List<Script> Scripts { get; set; }
         public MainWindow()
         {
             MainWindow.Window = this;
+            Scripts = new List<Script>();
             InitializeComponent();
             UpdateAssetDisplay();
             ContextMenu cm = new ContextMenu();
@@ -64,9 +65,9 @@ namespace Editor
                             for(int i = 0; i < compString.Length; i++)
                             {
                                 if (compString[i].Equals('{')) level++;
-                                else if(compString[i].Equals('}')) level--;
-                                propertyString += compString[i];
-                                if(level == 0)
+                                if(level != 0) propertyString += compString[i];
+                                if (compString[i].Equals('}')) level--;
+                                if (level == 0 && !compString[i].Equals(','))
                                 {
                                     componentStrings.Add(propertyString);
                                     propertyString = "";
@@ -75,18 +76,40 @@ namespace Editor
                             for(int i = 0; i < componentStrings.Count; i++)
                             {
                                 string current = componentStrings[i];
+                                List<string> savedValues = DivideStrings(current);
                                 Match scriptMatch = Regex.Match(current, "script=\"(.*?)\"");
                                 if (scriptMatch != null)
                                 {
                                     FileInfo compFile = new FileInfo("..\\..\\..\\RenderEngineDX12\\" + scriptMatch.Groups[1].ToString());
                                     entity.Editor.AddComponent(compFile);
+                                    entity.Editor.Owner.Components.Last().SetProperties(savedValues);
                                 }
                             }
+                            entity.Editor.SyncProperties();
                             //{(?>[^{}]+|(?R))*}
                         }
                     }
                 }
             }
+        }
+        private List<string> DivideStrings(string value)
+        {
+            List<string> result = new List<string>();
+            int level = 0;
+            string currentString = "";
+            for(int i = 0; i < value.Length; i++)
+            {
+                if (value[i].Equals('}')) level--;
+                if (level >= 1 && (level == 1 && !value[i].Equals(','))) currentString += value[i]; 
+                if (value[i].Equals('{')) level++;
+                if(level == 1 && value[i].Equals(','))
+                {
+                    result.Add(currentString);
+                    currentString = "";
+                }
+            }
+            result.Add(currentString);
+            return result;
         }
         private void DropEntity(object sender, DragEventArgs e)
         {
@@ -113,11 +136,23 @@ namespace Editor
         private void UpdateAssetDisplay()
         {
             assetDisplay.Items.Clear();
+            Scripts.Clear();
             DirectoryInfo dir = new DirectoryInfo("..\\..\\..\\RenderEngineDX12");
             IEnumerable<FileInfo> files = dir.EnumerateFiles();
             foreach (FileInfo file in files)
             {
                 if (file.Extension != ".lua" && file.Extension != ".entity") continue;
+                if (file.Extension == ".lua")
+                {
+                    Script script = new Script
+                    {
+                        File = file,
+                        Name = Path.GetFileNameWithoutExtension(file.Name),
+                        IsUserDefined = false
+                    };
+                    script.Header = script.Name;
+                    Scripts.Add(script);
+                }
                 AssetItem item = new AssetItem(file);
                 item.EditorTabs = editorTabs;
                 assetDisplay.Items.Add(item);

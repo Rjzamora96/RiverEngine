@@ -60,6 +60,7 @@
     <Compile Include="ComponentProperty.cs" />
     <Compile Include="EntityEditor.cs" />
     <Compile Include="EntityItem.cs" />
+    <Compile Include="Script.cs" />
     <Compile Include="TextEditor.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

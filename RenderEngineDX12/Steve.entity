@@ -1,1 +1,1 @@
-entity={{script="moveLeft.lua",componentName="moveLeft",speed=100.0}}
+entity={{script="moveLeft.lua",componentName="moveLeft",speed=100.0},{script="cameraMove.lua",componentName="cameraMove",speed=100}}

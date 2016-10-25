@@ -33,6 +33,10 @@ namespace Editor
                 Children.Add(Text);
                 Text.TextChanged += UpdateBound;
             }
+            public void SyncToValue()
+            {
+                if (Bound != null) Text.Text = Bound.Value;
+            }
             private void UpdateBound(object sender, RoutedEventArgs e)
             {
                 if (Bound != null) Bound.Value = Text.Text;
@@ -53,20 +57,59 @@ namespace Editor
             border.BorderThickness = new Thickness(1);
             Grid.SetRow(border, 1);
             Children.Add(border);
-            Button addComponent = new Button();
-            addComponent.Content = "Add Component";
+            Label addComponent = new Label();
+            addComponent.Content = "Drop Component";
+            addComponent.HorizontalContentAlignment = HorizontalAlignment.Center;
             Grid.SetRow(addComponent, 2);
             Children.Add(addComponent);
             _entityProperties = new Grid();
             _entityProperties.Margin = new Thickness(3);
             _entityProperties.RowDefinitions.Add(new RowDefinition { Height = new GridLength(0.0, GridUnitType.Auto) });
             _nameLine = new PropertyLine("Name: ");
+            _nameLine.Text.Text = "Entity";
             _nameLine.Text.TextChanged += NameChanged;
             Grid.SetRow(_nameLine, 0);
             _entityProperties.Children.Add(_nameLine);
             border.Child = _entityProperties;
             AllowDrop = true;
             Drop += DropComponent;
+            //addComponent.Click += ClickAddComponent;
+        }
+        private void ClickAddComponent(object sender, RoutedEventArgs args)
+        {
+            ContextMenu menu = new ContextMenu();
+            foreach(Script script in MainWindow.Window.Scripts)
+            {
+                script.Click -= ScriptClicked;
+                script.Click += ScriptClicked;
+                menu.Items.Add(script);
+            }
+            ContextMenu = menu;
+            ContextMenu.IsOpen = true;
+            ContextMenuClosing += Reset;
+        }
+        private void Reset(object sender, RoutedEventArgs args)
+        {
+            ContextMenu.Items.Clear();
+        }
+        private void ScriptClicked(object sender, RoutedEventArgs args)
+        {
+            Script script = sender as Script;
+            if(script != null)
+            {
+                AddComponent(script.File);
+            }
+        }
+        public void SyncProperties()
+        {
+            foreach(UIElement element in _entityProperties.Children)
+            {
+                PropertyLine property = element as PropertyLine;
+                if(property != null)
+                {
+                    property.SyncToValue();
+                }
+            }
         }
         public void AddComponent(FileInfo file)
         {
