@@ -136,6 +136,7 @@ namespace Editor
         private void UpdateAssetDisplay()
         {
             assetDisplay.Items.Clear();
+            basicsDisplay.Items.Clear();
             Scripts.Clear();
             DirectoryInfo dir = new DirectoryInfo("..\\..\\..\\RenderEngineDX12");
             IEnumerable<FileInfo> files = dir.EnumerateFiles();
@@ -157,6 +158,18 @@ namespace Editor
                 item.EditorTabs = editorTabs;
                 assetDisplay.Items.Add(item);
             }
+            ComponentItem transformItem = new ComponentItem
+            {
+                Name = "transform",
+                Properties = new List<ComponentProperty>
+                {
+                    new ComponentProperty("position","{0,0}"),
+                    new ComponentProperty("rotation","0.0"),
+                    new ComponentProperty("scale","1.0")
+                }
+            };
+            BasicComponentItem transform = new BasicComponentItem(transformItem);
+            basicsDisplay.Items.Add(transform);
         }
 
         private void OpenFile(object sender, RoutedEventArgs e)

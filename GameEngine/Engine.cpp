@@ -54,6 +54,7 @@ namespace RiverEngine
 			.endClass()
 			.deriveClass<Transform, Component>("Transform")
 			.addData("rotation", &Transform::rotation)
+			.addData("scale", &Transform::scale)
 			.addData("position", &Transform::position)
 			.endClass();
 		getGlobalNamespace(L)
