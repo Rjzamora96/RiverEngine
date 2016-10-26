@@ -15,7 +15,7 @@ namespace Editor
         public override string ToString()
         {
             string result = "{";
-            if(!Script.Equals("")) result += "script=\"" + Script + "\",";
+            if(Script != null) result += "script=\"" + Script + "\",";
             result += "componentName=\"" + Name + "\"";
             for(int i = 0; i < Properties.Count; i++)
             {
@@ -24,6 +24,7 @@ namespace Editor
             result += "}";
             return result;
         }
+
         public void SetProperties(List<string> strings)
         {
             for(int i = 0; i < Properties.Count; i++)

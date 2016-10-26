@@ -11,8 +11,6 @@ namespace RiverEngine
 	Entity::Entity()
 	{
 		memset(m_components, 0, MAX_COMPONENTS * sizeof(m_components[0]));
-		transform = new Transform();
-		AddComponent(transform, "Transform");
 	}
 
 
@@ -37,6 +35,7 @@ namespace RiverEngine
 			if (!m_components[j])
 			{
 				if (typeid(*c) == typeid(Sprite)) sprite = static_cast<Sprite*>(c);
+				if (typeid(*c) == typeid(Transform)) transform = static_cast<Transform*>(c);
 				m_components[j] = c;
 				c->SetOwner(this);
 				c->SetName(name);
@@ -61,6 +60,7 @@ namespace RiverEngine
 		{
 			if (name.compare(m_components[i]->GetName()) == 0) return m_components[i]->GetProperties();
 		}
+		return luabridge::LuaRef(L, nullptr);
 	}
 
 	void Entity::LoadComponents(std::string script)
@@ -80,7 +80,21 @@ namespace RiverEngine
 				}
 				if (subTable["componentName"].isString())
 				{
-					AddComponent(c, subTable["componentName"]);
+					if (subTable["componentName"].cast<std::string>().compare("transform") == 0)
+					{
+						delete c;
+						c = new Transform();
+						LuaRef position = subTable["position"];
+						float x = position[1].cast<float>();
+						//bool test = subTable["position"][0].isNumber();
+						((Transform*)c)->position->x = position[1].cast<float>();
+						((Transform*)c)->position->y = position[2].cast<float>();
+						((Transform*)c)->rotation = subTable["rotation"].cast<float>();
+						((Transform*)c)->scale = subTable["scale"].cast<float>();
+						transform = static_cast<Transform*>(c);
+						AddComponent(c, "transform");
+					}
+					else AddComponent(c, subTable["componentName"]);
 				}
 				c->Init();
 				ArrayList<std::string> keyList = c->GetKeyList();

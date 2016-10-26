@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
 namespace Editor
@@ -25,6 +26,15 @@ namespace Editor
             content.Children.Add(image);
             content.Children.Add(label);
             Content = content;
+            MouseMove += MoveAsset;
+        }
+        private void MoveAsset(object sender, MouseEventArgs e)
+        {
+            BasicComponentItem item = sender as BasicComponentItem;
+            if (item != null && e.LeftButton == MouseButtonState.Pressed)
+            {
+                DragDrop.DoDragDrop(item, Component, DragDropEffects.All);
+            }
         }
     }
 }

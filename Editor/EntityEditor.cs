@@ -111,6 +111,24 @@ namespace Editor
                 }
             }
         }
+        public void AddComponent(ComponentItem item)
+        {
+            _entityProperties.RowDefinitions.Add(new RowDefinition { Height = new GridLength(0.0, GridUnitType.Auto) });
+            Label compName = new Label();
+            compName.Content = item.Name;
+            Grid.SetRow(compName, _entityProperties.Children.Count);
+            _entityProperties.Children.Add(compName);
+            foreach (ComponentProperty prop in item.Properties)
+            {
+                _entityProperties.RowDefinitions.Add(new RowDefinition { Height = new GridLength(0.0, GridUnitType.Auto) });
+                PropertyLine line = new PropertyLine(prop.Name + ": ");
+                line.Text.Text = prop.Value.TrimStart();
+                Grid.SetRow(line, _entityProperties.Children.Count);
+                _entityProperties.Children.Add(line);
+                line.Bound = prop;
+            }
+            Owner.Components.Add(item);
+        }
         public void AddComponent(FileInfo file)
         {
             ComponentItem component = new ComponentItem();
@@ -133,8 +151,8 @@ namespace Editor
                 ComponentProperty compProperty = new ComponentProperty(match.Groups[1].ToString(), match.Groups[2].ToString().TrimStart());
                 line.Bound = compProperty;
                 component.Properties.Add(compProperty);
-                Owner.Components.Add(component);
             }
+            Owner.Components.Add(component);
         }
         private void DropComponent(object sender, DragEventArgs e)
         {
@@ -148,6 +166,11 @@ namespace Editor
                     {
                         AddComponent(file);
                     }
+                }
+                else if(e.Data.GetDataPresent(typeof(ComponentItem)))
+                {
+                    ComponentItem item = (ComponentItem)e.Data.GetData(typeof(ComponentItem));
+                    AddComponent(item);
                 }
             }
         }

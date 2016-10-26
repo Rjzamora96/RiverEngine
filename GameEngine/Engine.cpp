@@ -73,16 +73,17 @@ namespace RiverEngine
 		Entity::AssignState(L);
 		Input::InitializeBindings();
 		Entity* e = new Entity();
+		e->LoadComponents("Steve.entity");
 		Sprite* sprite = new Sprite("cat.png");
 		e->AddComponent(sprite, "Sprite");
 		Sprite::addTexture("dog.png");
 		Sprite::addSprite(sprite, "cat.png");
-		e->LoadComponents("Steve.entity");
 		//Component* moveLeft = new Component();
 		//e->AddComponent(moveLeft, "MoveLeft");
 		//moveLeft->SetScript("moveLeft.lua");
 		//moveLeft->Init();
 		Entity* c = new Entity();
+		c->AddComponent(new Transform(), "Transform");
 		Sprite* sprite2 = new Sprite("camera.png");
 		c->AddComponent(sprite2, "Sprite");
 		Sprite::addSprite(sprite2, "camera.png");
