@@ -72,26 +72,20 @@ namespace RiverEngine
 		Component::AssignState(L);
 		Entity::AssignState(L);
 		Input::InitializeBindings();
+		if (luaL_dofile(L, "Sprites.assets") == 0)
+		{
+			LuaRef table = getGlobal(L, "sprites");
+			int tableLen = table.length();
+			for (int i = 1; i <= table.length(); ++i)
+			{
+				Sprite::addTexture(table[i].cast<std::string>());
+			}
+		}
 		Entity* e = new Entity();
 		e->LoadComponents("Steve.entity");
-		Sprite* sprite = new Sprite("cat.png");
-		e->AddComponent(sprite, "Sprite");
-		Sprite::addTexture("dog.png");
-		Sprite::addSprite(sprite, "cat.png");
-		//Component* moveLeft = new Component();
-		//e->AddComponent(moveLeft, "MoveLeft");
-		//moveLeft->SetScript("moveLeft.lua");
-		//moveLeft->Init();
 		Entity* c = new Entity();
-		c->AddComponent(new Transform(), "Transform");
-		Sprite* sprite2 = new Sprite("camera.png");
-		c->AddComponent(sprite2, "Sprite");
-		Sprite::addSprite(sprite2, "camera.png");
-		Component* cameraMove = new Component();
-		c->AddComponent(cameraMove, "CameraMove");
+		c->LoadComponents("Camera.entity");
 		c->AddTag("Camera");
-		cameraMove->SetScript("cameraMove.lua");
-		cameraMove->Init();
 		Scene::SetActiveScene(new Scene());
 		Scene::AddEntity(e);
 		Scene::AddEntity(c);

@@ -32,7 +32,7 @@ namespace Editor
                 for(int j = 0; j < strings.Count; j++)
                 {
                     Match match = Regex.Match(strings[j], Properties[i].Name + "=(.*)");
-                    if (match != null)
+                    if (match.Success)
                     {
                         Properties[i].Value = match.Groups[1].ToString();
                     }

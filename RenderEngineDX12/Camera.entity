@@ -1,0 +1,1 @@
+entity={{componentName="transform",position={0,0},rotation=0.0,scale=1.0},{componentName="sprite",sprite="camera.png",origin={0,0}},{script="cameraMove.lua",componentName="cameraMove",speed=100}}

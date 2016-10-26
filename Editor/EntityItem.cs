@@ -13,6 +13,7 @@ namespace Editor
     {
         private Label nameLabel;
         public string EName { get { return _name; } set { _name = value; nameLabel.Content = _name; } }
+        public string Tags { get; set; }
         public List<ComponentItem> Components { get; set; }
         private string _name;
         public EntityEditor Editor { get; set; }
@@ -22,6 +23,7 @@ namespace Editor
             Components = new List<ComponentItem>();
             nameLabel = new Label();
             EName = "Entity";
+            Tags = "{}";
             Content = nameLabel;
             ContextMenu cm = new ContextMenu();
             MenuItem rename = new MenuItem();
@@ -44,12 +46,15 @@ namespace Editor
         public override string ToString()
         {
             string result = "entity={";
+            result += "name=\"" + EName + "\",";
+            result += "tags=" + Tags + ",";
+            result += "components={";
             for(int i = 0; i < Components.Count; i++)
             {
                 result += Components[i].ToString();
-                if (i < Components.Count - 1) result += ",";
+                result += ",";
             }
-            result += "}";
+            result = result.TrimEnd(',') + "}" + "}";
             return result;
         }
         private void DisplayEditor(object sender, RoutedEventArgs e)

@@ -1,0 +1,1 @@
+entity={name="Steve2",tags=,components={{componentName="transform",position={500,0},rotation=0.0,scale=1.0},{script="moveLeft.lua",componentName="moveLeft",speed=100.0},{componentName="sprite",sprite="cat.png",origin={0,0}}}}

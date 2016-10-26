@@ -56,8 +56,16 @@ namespace Editor
                             EntityItem entity = new EntityItem();
                             sceneDisplay.Items.Add(entity);
                             string entityScript = File.ReadAllText(file.FullName);
-                            Match match = Regex.Match(entityScript, "{(.*)}");
-                            Group compGroup = match.Groups[1];  //AllComponents
+                            Match eMatch = Regex.Match(entityScript, "{(.*)}");
+                            Group entityGroup = eMatch.Groups[0];  //AllComponents
+                            string entityString = entityGroup.ToString();
+                            List<string> entityProperties = DivideStrings(entityString);
+                            Match eNameMatch = Regex.Match(entityProperties[0], "name=\"(.*?)\"");
+                            entity.EName = eNameMatch.Groups[1].ToString();
+                            Match tagsMatch = Regex.Match(entityProperties[1], "tags=\"(.*?)\"");
+                            entity.Tags = tagsMatch.Groups[1].ToString();
+                            Match cMatch = Regex.Match(entityProperties[2], "{(.*)}");
+                            Group  compGroup = cMatch.Groups[1];  //AllComponents
                             string compString = compGroup.ToString();
                             int level = 0;
                             List<string> componentStrings = new List<string>();
@@ -78,11 +86,44 @@ namespace Editor
                                 string current = componentStrings[i];
                                 List<string> savedValues = DivideStrings(current);
                                 Match scriptMatch = Regex.Match(current, "script=\"(.*?)\"");
-                                if (scriptMatch != null)
+                                if (scriptMatch.Success)
                                 {
                                     FileInfo compFile = new FileInfo("..\\..\\..\\RenderEngineDX12\\" + scriptMatch.Groups[1].ToString());
                                     entity.Editor.AddComponent(compFile);
                                     entity.Editor.Owner.Components.Last().SetProperties(savedValues);
+                                }
+                                else
+                                {
+                                    Match nameMatch = Regex.Match(current, "componentName=\"(.*?)\"");
+                                    if (nameMatch.Groups[1].ToString().Equals("transform"))
+                                    {
+                                        ComponentItem transformItem = new ComponentItem
+                                        {
+                                            Name = "transform",
+                                            Properties = new List<ComponentProperty>
+                                            {
+                                                new ComponentProperty("position","{0,0}"),
+                                                new ComponentProperty("rotation","0.0"),
+                                                new ComponentProperty("scale","1.0")
+                                            }
+                                        };
+                                        entity.Editor.AddComponent(transformItem);
+                                        transformItem.SetProperties(savedValues);
+                                    }
+                                    else if (nameMatch.Groups[1].ToString().Equals("sprite"))
+                                    {
+                                        ComponentItem transformItem = new ComponentItem
+                                        {
+                                            Name = "sprite",
+                                            Properties = new List<ComponentProperty>
+                                            {
+                                                new ComponentProperty("sprite","\"\""),
+                                                new ComponentProperty("origin","{0,0}")
+                                            }
+                                        };
+                                        entity.Editor.AddComponent(transformItem);
+                                        transformItem.SetProperties(savedValues);
+                                    }
                                 }
                             }
                             entity.Editor.SyncProperties();
@@ -100,7 +141,7 @@ namespace Editor
             for(int i = 0; i < value.Length; i++)
             {
                 if (value[i].Equals('}')) level--;
-                if (level >= 1 && (level == 1 && !value[i].Equals(','))) currentString += value[i]; 
+                if (level > 1 || (level == 1 && !value[i].Equals(','))) currentString += value[i]; 
                 if (value[i].Equals('{')) level++;
                 if(level == 1 && value[i].Equals(','))
                 {
@@ -140,9 +181,10 @@ namespace Editor
             Scripts.Clear();
             DirectoryInfo dir = new DirectoryInfo("..\\..\\..\\RenderEngineDX12");
             IEnumerable<FileInfo> files = dir.EnumerateFiles();
+            string spriteList = "sprites={";
             foreach (FileInfo file in files)
             {
-                if (file.Extension != ".lua" && file.Extension != ".entity") continue;
+                if (file.Extension != ".lua" && file.Extension != ".entity" && file.Extension != ".png") continue;
                 if (file.Extension == ".lua")
                 {
                     Script script = new Script
@@ -154,10 +196,16 @@ namespace Editor
                     script.Header = script.Name;
                     Scripts.Add(script);
                 }
+                if(file.Extension == ".png")
+                {
+                    spriteList += "\"" + file.Name + "\"" + ",";
+                }
                 AssetItem item = new AssetItem(file);
                 item.EditorTabs = editorTabs;
                 assetDisplay.Items.Add(item);
             }
+            spriteList = spriteList.TrimEnd(',') + "}";
+            File.WriteAllText("..\\..\\..\\RenderEngineDX12\\Sprites.assets", spriteList);
             ComponentItem transformItem = new ComponentItem
             {
                 Name = "transform",
@@ -170,6 +218,17 @@ namespace Editor
             };
             BasicComponentItem transform = new BasicComponentItem(transformItem);
             basicsDisplay.Items.Add(transform);
+            ComponentItem spriteItem = new ComponentItem
+            {
+                Name = "sprite",
+                Properties = new List<ComponentProperty>
+                {
+                    new ComponentProperty("sprite","\"\""),
+                    new ComponentProperty("origin","{0,0}"),
+                }
+            };
+            BasicComponentItem sprite = new BasicComponentItem(spriteItem);
+            basicsDisplay.Items.Add(sprite);
         }
 
         private void OpenFile(object sender, RoutedEventArgs e)

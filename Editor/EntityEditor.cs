@@ -43,6 +43,7 @@ namespace Editor
             }
         }
         private PropertyLine _nameLine;
+        private PropertyLine _tagLine;
         public EntityEditor() : base()
         {
             RowDefinitions.Add(new RowDefinition { Height = new GridLength(0.0, GridUnitType.Auto) });
@@ -65,11 +66,17 @@ namespace Editor
             _entityProperties = new Grid();
             _entityProperties.Margin = new Thickness(3);
             _entityProperties.RowDefinitions.Add(new RowDefinition { Height = new GridLength(0.0, GridUnitType.Auto) });
+            _entityProperties.RowDefinitions.Add(new RowDefinition { Height = new GridLength(0.0, GridUnitType.Auto) });
             _nameLine = new PropertyLine("Name: ");
             _nameLine.Text.Text = "Entity";
             _nameLine.Text.TextChanged += NameChanged;
+            _tagLine = new PropertyLine("Tags: ");
+            _tagLine.Text.Text = "{}";
+            _tagLine.Text.TextChanged += TagsChanged;
             Grid.SetRow(_nameLine, 0);
+            Grid.SetRow(_tagLine, 1);
             _entityProperties.Children.Add(_nameLine);
+            _entityProperties.Children.Add(_tagLine);
             border.Child = _entityProperties;
             AllowDrop = true;
             Drop += DropComponent;
@@ -102,6 +109,8 @@ namespace Editor
         }
         public void SyncProperties()
         {
+            _nameLine.Text.Text = Owner.EName;
+            _tagLine.Text.Text = Owner.Tags;
             foreach(UIElement element in _entityProperties.Children)
             {
                 PropertyLine property = element as PropertyLine;
@@ -178,6 +187,10 @@ namespace Editor
         private void NameChanged(object sender, RoutedEventArgs e)
         {
             Owner.EName = _nameLine.Text.Text;
+        }
+        private void TagsChanged(object sender, RoutedEventArgs e)
+        {
+            Owner.Tags = _tagLine.Text.Text;
         }
         /*
          <Grid Grid.Column="4" Grid.Row="0">

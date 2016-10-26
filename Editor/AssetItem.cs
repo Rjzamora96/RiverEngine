@@ -24,6 +24,9 @@ namespace Editor
             Image fileImage = new Image();
             if (_file.Extension.Equals(".lua")) fileImage.Source = new BitmapImage(new Uri("lua-icon.png", UriKind.Relative));
             else if (_file.Extension.Equals(".entity")) fileImage.Source = new BitmapImage(new Uri("entity-icon.ico", UriKind.Relative));
+            else if (_file.Extension.Equals(".png")) fileImage.Source = new BitmapImage(new Uri(_file.FullName, UriKind.RelativeOrAbsolute));
+            fileImage.Height = 100.0;
+            fileImage.MaxHeight = 100.0;
             TextBox fileName = new TextBox();
             fileName.BorderThickness = new Thickness(0);
             fileName.TextWrapping = TextWrapping.Wrap;
