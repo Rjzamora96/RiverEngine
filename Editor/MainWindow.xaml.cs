@@ -291,6 +291,7 @@ namespace Editor
             }
             result = result.TrimEnd(',') + "}";
             File.WriteAllText("..\\..\\..\\RenderEngineDX12\\Scene.scene", result);
+            UpdateAssetDisplay();
         }
         private void NewFile(object sender, RoutedEventArgs e)
         {
