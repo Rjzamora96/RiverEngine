@@ -4,7 +4,7 @@
 #include "Component.h"
 #include "Transform.h"
 #include "Sprite.h"
-#include "LuaBridge.h"
+
 namespace RiverEngine
 {
 	luabridge::lua_State* Entity::L;
@@ -18,14 +18,9 @@ namespace RiverEngine
 	{
 	}
 
-	void Entity::SetName(const char * const name)
+	void Entity::SetName(const std::string const name)
 	{
-		for (int j = 0; j < MAX_NAME_LEN; ++j)
-		{
-			m_name[j] = name[j];
-			if (!name[j]) return;
-		}
-		m_name[MAX_NAME_LEN - 1] = 0;
+		m_name = name;
 	}
 
 	bool Entity::AddComponent(Component * c, const char * const name)
@@ -69,11 +64,15 @@ namespace RiverEngine
 		if (luaL_dofile(L, script.c_str()) == 0)
 		{
 			LuaRef table = getGlobal(L, "entity");
-			int tableLen = table.length();
-			for (int i = 1; i <= table.length(); ++i)
+			LuaRef entityName = table["name"];
+			LuaRef tagList = table["tags"];
+			if (entityName.isString()) m_name = entityName.cast<std::string>();
+			if (tagList.isTable()) for (int i = 1; i <= tagList.length(); ++i) if (tagList[i].isString()) AddTag(tagList[i].cast<std::string>());
+			LuaRef compTable = table["components"];
+			for (int i = 1; i <= compTable.length(); ++i)
 			{
 				Component* c = new Component();
-				LuaRef subTable = table[i];
+				LuaRef subTable = compTable[i];
 				if (subTable["script"].isString())
 				{
 					c->SetScript(subTable["script"]);
@@ -116,6 +115,63 @@ namespace RiverEngine
 					}
 					//subTable[key];
 				}
+			}
+		}
+	}
+
+	void Entity::LoadComponentsFromTable(luabridge::LuaRef table)
+	{
+		using namespace luabridge;
+		LuaRef entityName = table["name"];
+		LuaRef tagList = table["tags"];
+		if (entityName.isString()) m_name = entityName.cast<std::string>();
+		if (tagList.isTable()) for (int i = 1; i <= tagList.length(); ++i) if (tagList[i].isString()) AddTag(tagList[i].cast<std::string>());
+		LuaRef compTable = table["components"];
+		for (int i = 1; i <= compTable.length(); ++i)
+		{
+			Component* c = new Component();
+			LuaRef subTable = compTable[i];
+			if (subTable["script"].isString())
+			{
+				c->SetScript(subTable["script"]);
+			}
+			if (subTable["componentName"].isString())
+			{
+				if (subTable["componentName"].cast<std::string>().compare("transform") == 0)
+				{
+					delete c;
+					c = new Transform();
+					LuaRef position = subTable["position"];
+					((Transform*)c)->position->x = position[1].cast<float>();
+					((Transform*)c)->position->y = position[2].cast<float>();
+					((Transform*)c)->rotation = subTable["rotation"].cast<float>();
+					((Transform*)c)->scale = subTable["scale"].cast<float>();
+					AddComponent(c, "transform");
+				}
+				else if (subTable["componentName"].cast<std::string>().compare("sprite") == 0)
+				{
+					delete c;
+					c = new Sprite();
+					LuaRef origin = subTable["origin"];
+					((Sprite*)c)->origin.x = origin[1].cast<float>();
+					((Sprite*)c)->origin.y = origin[2].cast<float>();
+					AddComponent(c, "sprite");
+					Sprite::addSprite((Sprite*)c, subTable["sprite"].cast<std::string>());
+				}
+				else AddComponent(c, subTable["componentName"]);
+			}
+			c->Init();
+			ArrayList<std::string> keyList = c->GetKeyList();
+			LuaRef properties = c->GetProperties();
+			for (int j = 0; j < keyList.Count(); ++j)
+			{
+				std::string key = keyList[j];
+				if (!subTable[key].isNil())
+				{
+					LuaRef value = subTable[key];
+					properties[key] = value;
+				}
+				//subTable[key];
 			}
 		}
 	}

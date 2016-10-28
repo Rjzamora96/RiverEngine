@@ -71,6 +71,7 @@ namespace RiverEngine
 			.endClass();
 		Component::AssignState(L);
 		Entity::AssignState(L);
+		Scene::AssignState(L);
 		Input::InitializeBindings();
 		if (luaL_dofile(L, "Sprites.assets") == 0)
 		{
@@ -81,14 +82,9 @@ namespace RiverEngine
 				Sprite::addTexture(table[i].cast<std::string>());
 			}
 		}
-		Entity* e = new Entity();
-		e->LoadComponents("Steve.entity");
-		Entity* c = new Entity();
-		c->LoadComponents("Camera.entity");
-		c->AddTag("Camera");
-		Scene::SetActiveScene(new Scene());
-		Scene::AddEntity(e);
-		Scene::AddEntity(c);
+		Scene* scene = new Scene();
+		Scene::SetActiveScene(scene);
+		scene->LoadSceneFromFile("Scene.scene");
 		return true;
 	}
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,6 +25,7 @@ namespace Editor
             Image fileImage = new Image();
             if (_file.Extension.Equals(".lua")) fileImage.Source = new BitmapImage(new Uri("lua-icon.png", UriKind.Relative));
             else if (_file.Extension.Equals(".entity")) fileImage.Source = new BitmapImage(new Uri("entity-icon.ico", UriKind.Relative));
+            else if (_file.Extension.Equals(".scene")) fileImage.Source = new BitmapImage(new Uri("scene-icon.png", UriKind.Relative));
             else if (_file.Extension.Equals(".png")) fileImage.Source = new BitmapImage(new Uri(_file.FullName, UriKind.RelativeOrAbsolute));
             fileImage.Height = 100.0;
             fileImage.MaxHeight = 100.0;
@@ -39,6 +41,7 @@ namespace Editor
             content.Children.Add(fileName);
             Content = content;
             MouseDoubleClick += OpenScript;
+            MouseDoubleClick += OpenScene;
             ContextMenu cm = new ContextMenu();
             MenuItem menuItem = new MenuItem();
             menuItem.Header = "Rename";
@@ -69,9 +72,91 @@ namespace Editor
             _fileName.IsReadOnly = false;
             Keyboard.Focus(_fileName);
         }
-
+        public void OpenScene(object sender, RoutedEventArgs e)
+        {
+            if (!_file.Extension.Equals(".scene")) return;
+            MainWindow.Window.sceneDisplay.Items.Clear();
+            List<string> entities = MainWindow.Window.DivideStrings(File.ReadAllText(_file.FullName));
+            foreach (string entityScript in entities)
+            {
+                EntityItem entity = new EntityItem();
+                MainWindow.Window.sceneDisplay.Items.Add(entity);
+                Match eMatch = Regex.Match(entityScript, "{(.*)}");
+                Group entityGroup = eMatch.Groups[0];  //AllComponents
+                string entityString = entityGroup.ToString();
+                List<string> entityProperties = MainWindow.Window.DivideStrings(entityString);
+                Match eNameMatch = Regex.Match(entityProperties[0], "name=\"(.*?)\"");
+                entity.EName = eNameMatch.Groups[1].ToString();
+                Match tagsMatch = Regex.Match(entityProperties[1], "tags=(.*)");
+                entity.Tags = tagsMatch.Groups[1].ToString();
+                Match cMatch = Regex.Match(entityProperties[2], "{(.*)}");
+                Group compGroup = cMatch.Groups[1];  //AllComponents
+                string compString = compGroup.ToString();
+                int level = 0;
+                List<string> componentStrings = new List<string>();
+                string propertyString = "";
+                for (int i = 0; i < compString.Length; i++)
+                {
+                    if (compString[i].Equals('{')) level++;
+                    if (level != 0) propertyString += compString[i];
+                    if (compString[i].Equals('}')) level--;
+                    if (level == 0 && !compString[i].Equals(','))
+                    {
+                        componentStrings.Add(propertyString);
+                        propertyString = "";
+                    }
+                }
+                for (int i = 0; i < componentStrings.Count; i++)
+                {
+                    string current = componentStrings[i];
+                    List<string> savedValues = MainWindow.Window.DivideStrings(current);
+                    Match scriptMatch = Regex.Match(current, "script=\"(.*?)\"");
+                    if (scriptMatch.Success)
+                    {
+                        FileInfo compFile = new FileInfo("..\\..\\..\\RenderEngineDX12\\" + scriptMatch.Groups[1].ToString());
+                        entity.Editor.AddComponent(compFile);
+                        entity.Editor.Owner.Components.Last().SetProperties(savedValues);
+                    }
+                    else
+                    {
+                        Match nameMatch = Regex.Match(current, "componentName=\"(.*?)\"");
+                        if (nameMatch.Groups[1].ToString().Equals("transform"))
+                        {
+                            ComponentItem transformItem = new ComponentItem
+                            {
+                                Name = "transform",
+                                Properties = new List<ComponentProperty>
+                                            {
+                                                new ComponentProperty("position","{0,0}"),
+                                                new ComponentProperty("rotation","0.0"),
+                                                new ComponentProperty("scale","1.0")
+                                            }
+                            };
+                            entity.Editor.AddComponent(transformItem);
+                            transformItem.SetProperties(savedValues);
+                        }
+                        else if (nameMatch.Groups[1].ToString().Equals("sprite"))
+                        {
+                            ComponentItem transformItem = new ComponentItem
+                            {
+                                Name = "sprite",
+                                Properties = new List<ComponentProperty>
+                                            {
+                                                new ComponentProperty("sprite","\"\""),
+                                                new ComponentProperty("origin","{0,0}")
+                                            }
+                            };
+                            entity.Editor.AddComponent(transformItem);
+                            transformItem.SetProperties(savedValues);
+                        }
+                    }
+                }
+                entity.Editor.SyncProperties();
+            }
+        }
         public void OpenScript(object sender, RoutedEventArgs e)
         {
+            if (!_file.Extension.Equals(".lua")) return;
             TextEditor activeEditor = new TextEditor();
             activeEditor.OpenFile(_file.FullName);
             Grid headerContainer = new Grid();

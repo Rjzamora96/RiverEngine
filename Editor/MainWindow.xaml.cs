@@ -62,7 +62,7 @@ namespace Editor
                             List<string> entityProperties = DivideStrings(entityString);
                             Match eNameMatch = Regex.Match(entityProperties[0], "name=\"(.*?)\"");
                             entity.EName = eNameMatch.Groups[1].ToString();
-                            Match tagsMatch = Regex.Match(entityProperties[1], "tags=\"(.*?)\"");
+                            Match tagsMatch = Regex.Match(entityProperties[1], "tags=(.*)");
                             entity.Tags = tagsMatch.Groups[1].ToString();
                             Match cMatch = Regex.Match(entityProperties[2], "{(.*)}");
                             Group  compGroup = cMatch.Groups[1];  //AllComponents
@@ -133,7 +133,7 @@ namespace Editor
                 }
             }
         }
-        private List<string> DivideStrings(string value)
+        public List<string> DivideStrings(string value)
         {
             List<string> result = new List<string>();
             int level = 0;
@@ -162,7 +162,7 @@ namespace Editor
                     EntityItem entity = (EntityItem)e.Data.GetData(typeof(EntityItem));
                     if(entity != null)
                     {
-                        File.WriteAllText("..\\..\\..\\RenderEngineDX12\\" + entity.EName + ".entity", entity.ToString());
+                        File.WriteAllText("..\\..\\..\\RenderEngineDX12\\" + entity.EName + ".entity", "entity=" + entity.ToString());
                         UpdateAssetDisplay();
                     }
                 }
@@ -184,7 +184,7 @@ namespace Editor
             string spriteList = "sprites={";
             foreach (FileInfo file in files)
             {
-                if (file.Extension != ".lua" && file.Extension != ".entity" && file.Extension != ".png") continue;
+                if (file.Extension != ".lua" && file.Extension != ".entity" && file.Extension != ".png" && file.Extension != ".scene") continue;
                 if (file.Extension == ".lua")
                 {
                     Script script = new Script
@@ -278,7 +278,20 @@ namespace Editor
             TextEditor activeEditor = (TextEditor)editorTabs.SelectedItem;
             activeEditor.SaveFile();
         }
-
+        private void SaveScene(object sender, RoutedEventArgs e)
+        {
+            string result = "scene={";
+            foreach (UIElement element in sceneDisplay.Items)
+            {
+                EntityItem entity = element as EntityItem;
+                if (entity != null)
+                {
+                    result += entity.ToString() + ",";
+                }
+            }
+            result = result.TrimEnd(',') + "}";
+            File.WriteAllText("..\\..\\..\\RenderEngineDX12\\Scene.scene", result);
+        }
         private void NewFile(object sender, RoutedEventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();

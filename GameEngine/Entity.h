@@ -20,8 +20,8 @@ namespace RiverEngine
 		Entity();
 		~Entity();
 		static void AssignState(luabridge::lua_State* l) { L = l; }
-		void SetName(const char* const name);
-		const char* GetName() const { return m_name; }
+		void SetName(const std::string const name);
+		const std::string GetName() const { return m_name; }
 		bool AddComponent(Component* c, const char* const name);
 		void AddTag(std::string tag) { m_tags.Add(tag); }
 		bool HasTag(std::string tag) { for (int i = 0; i < m_tags.Count(); i++) if (m_tags[i].compare(tag) == 0) return true; return false; }
@@ -29,13 +29,14 @@ namespace RiverEngine
 		template <class T> T* GetComponentByType() const;
 		luabridge::LuaRef GetComponent(std::string name);
 		void LoadComponents(std::string script);
+		void LoadComponentsFromTable(luabridge::LuaRef table);
 		Transform* transform;
 		Sprite* sprite;
 		bool Update(float dt);
 	protected:
 		bool Initialize();
 	private:
-		char m_name[MAX_NAME_LEN];
+		std::string m_name;
 		ArrayList<std::string> m_tags;
 		Component* m_components[MAX_COMPONENTS];
 		static luabridge::lua_State* L;

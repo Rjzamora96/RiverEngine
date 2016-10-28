@@ -1,8 +1,11 @@
 #include "Scene.h"
 
+#include "LuaBridge.h"
+
 namespace RiverEngine
 {
 	Scene* Scene::m_activeScene = 0;
+	luabridge::lua_State* Scene::L = 0;
 
 	Scene::Scene()
 	{
@@ -36,5 +39,19 @@ namespace RiverEngine
 			if (m_activeScene->m_entityList[i]->HasTag(tag)) return m_activeScene->m_entityList[i];
 		}
 		return 0;
+	}
+	void Scene::LoadSceneFromFile(std::string path)
+	{
+		using namespace luabridge;
+		if (luaL_dofile(L, path.c_str()) == 0)
+		{
+			LuaRef table = getGlobal(L, "scene");
+			for (int i = 1; i <= table.length(); i++)
+			{
+				Entity* entity = new Entity();
+				entity->LoadComponentsFromTable(table[i]);
+				AddEntity(entity);
+			}
+		}
 	}
 }

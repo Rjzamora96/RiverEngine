@@ -9,6 +9,11 @@
     <DockPanel>
         <ToolBarTray DockPanel.Dock="Top">
             <ToolBar>
+                <Menu>
+                    <MenuItem Header="Scene">
+                        <MenuItem Header="Save Scene" Click="SaveScene"/>
+                    </MenuItem>
+                </Menu>
                 <Button Click="NewFile" Content="New" />
                 <Button Click="OpenFile" Content="Open" />
                 <Button Click="SaveFile" Content="Save" />

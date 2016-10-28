@@ -45,7 +45,7 @@ namespace Editor
         }
         public override string ToString()
         {
-            string result = "entity={";
+            string result = "{";
             result += "name=\"" + EName + "\",";
             result += "tags=" + Tags + ",";
             result += "components={";
