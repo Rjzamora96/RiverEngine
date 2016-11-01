@@ -14,6 +14,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using System.Windows.Threading;
 
 namespace Editor
 {
@@ -24,6 +25,7 @@ namespace Editor
     {
         public static MainWindow Window { get; set; }
         public List<Script> Scripts { get; set; }
+        private DispatcherTimer timer { get; set; }
         public MainWindow()
         {
             MainWindow.Window = this;
@@ -40,6 +42,41 @@ namespace Editor
             assetDisplay.Drop += DropEntity;
             sceneDisplay.AllowDrop = true;
             sceneDisplay.Drop += DropPrefab;
+            timer = new DispatcherTimer();
+            timer.Interval = TimeSpan.FromSeconds(0.1);
+            timer.Tick += UpdatePreview;
+            timer.Start();
+            Image test = new Image();
+            test.Source = new BitmapImage(new Uri("lua-icon.png", UriKind.Relative));
+            scenePreview.Children.Add(test);
+        }
+        private void UpdatePreview(object sender, EventArgs e)
+        {
+            foreach(UIElement element in sceneDisplay.Items)
+            {
+                EntityItem entity = element as EntityItem;
+                if(entity != null)
+                {
+                    foreach(ComponentItem comp in entity.Components)
+                    {
+                        if(comp.Name.Equals("transform"))
+                        {
+                            foreach(ComponentProperty property in comp.Properties)
+                            {
+                                if(property.Name.Equals("position"))
+                                {
+                                    Match match = Regex.Match(property.Value, "{(.*),(.*)}");
+                                    if(match.Success)
+                                    {
+                                        double x = double.Parse(match.Groups[1].ToString());
+                                        double y = double.Parse(match.Groups[2].ToString());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
         private void DropPrefab(object sender, DragEventArgs e)
         {
