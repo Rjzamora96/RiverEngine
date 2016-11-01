@@ -61,6 +61,7 @@
     <Compile Include="Components\ComponentProperty.cs" />
     <Compile Include="EntityEditor.cs" />
     <Compile Include="EntityItem.cs" />
+    <Compile Include="PreviewItem.cs" />
     <Compile Include="Script.cs" />
     <Compile Include="TextEditor.cs" />
     <Page Include="MainWindow.xaml">
