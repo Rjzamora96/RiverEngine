@@ -26,7 +26,9 @@ namespace Editor
         public static MainWindow Window { get; set; }
         public List<Script> Scripts { get; set; }
         private DispatcherTimer timer { get; set; }
-        public Vector CameraPosition { get; set; }
+        public static Point CameraPosition { get; set; }
+        public Point LastMousePoint { get; set; }
+        public static bool Panning { get; set; }
         public MainWindow()
         {
             MainWindow.Window = this;
@@ -43,15 +45,36 @@ namespace Editor
             assetDisplay.Drop += DropEntity;
             sceneDisplay.AllowDrop = true;
             sceneDisplay.Drop += DropPrefab;
+            scenePreview.PreviewMouseMove += PanScene;
             timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(0.1);
+            timer.Interval = TimeSpan.FromTicks(0);
             timer.Tick += UpdatePreview;
             timer.Start();
             //Image test = new Image();
             //test.Source = new BitmapImage(new Uri("lua-icon.png", UriKind.Relative));
             //scenePreview.Children.Add(test);
         }
-
+        private void PanScene(object sender, MouseEventArgs args)
+        {
+            if(args.RightButton == MouseButtonState.Pressed)
+            {
+                if(!Panning)
+                {
+                    LastMousePoint = args.GetPosition(sender as IInputElement);
+                    Panning = true;
+                }
+                else
+                {
+                    Point current = args.GetPosition(sender as IInputElement);
+                    CameraPosition = new Point((current.X - LastMousePoint.X) + CameraPosition.X, (current.Y - LastMousePoint.Y) + CameraPosition.Y);
+                    LastMousePoint = current;
+                }
+            }
+            else if(args.RightButton == MouseButtonState.Released && Panning)
+            {
+                Panning = false;
+            }
+        }
         private void UpdatePreview(object sender, EventArgs e)
         {
             foreach(UIElement element in sceneDisplay.Items)

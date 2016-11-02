@@ -3,6 +3,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -17,10 +18,37 @@ namespace Editor
         public double Rotation { get; set; }
         public double Scale { get; set; }
         public Image Sprite { get; set; }
+        public string FileName { get; set; }
         public EntityItem Owner { get; set; }
+        private Point LastMousePosition { get; set; }
+        private bool Moving { get; set; }
         public PreviewItem()
         {
             Sprite = new Image();
+            
+            FileName = "";
+        }
+
+        private void MoveItem(object sender, MouseEventArgs args)
+        {
+            if(args.LeftButton == MouseButtonState.Pressed)
+            {
+                if(!Moving)
+                {
+                    LastMousePosition = args.GetPosition(MainWindow.Window.scenePreview);
+                    Moving = true;
+                }
+                else
+                {
+                    Point mousePosition = args.GetPosition(MainWindow.Window.scenePreview);
+                    X += mousePosition.X - LastMousePosition.X;
+                    LastMousePosition = mousePosition;
+                }
+            }
+            if(args.LeftButton == MouseButtonState.Released)
+            {
+                Moving = false;
+            }
         }
         public void Update()
         {
@@ -53,8 +81,9 @@ namespace Editor
                         }
                     }
                     TransformGroup transform = new TransformGroup();
+                    transform.Children.Add(new ScaleTransform(Scale, Scale));
                     transform.Children.Add(new RotateTransform(Rotation));
-                    transform.Children.Add(new TranslateTransform(X - OriginX, Y - OriginY));
+                    transform.Children.Add(new TranslateTransform((X - OriginX) + MainWindow.CameraPosition.X, (Y - OriginY) + MainWindow.CameraPosition.Y));
                     Sprite.RenderTransform = transform;
                 }
                 else if(comp.Name.Equals("sprite"))
@@ -82,8 +111,12 @@ namespace Editor
                                     FileInfo file = new FileInfo("..\\..\\..\\RenderEngineDX12\\" + match.Groups[1].ToString());
                                     if(file.Extension.Equals(".png"))
                                     {
-                                        BitmapImage image = new BitmapImage(new Uri(file.FullName, UriKind.RelativeOrAbsolute));
-                                        Sprite.Source = image;
+                                        if(!file.FullName.Equals(FileName))
+                                        {
+                                            BitmapImage image = new BitmapImage(new Uri(file.FullName, UriKind.RelativeOrAbsolute));
+                                            Sprite.Source = image;
+                                            FileName = file.FullName;
+                                        }
                                     }
                                 }
                             }
