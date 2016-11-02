@@ -61,7 +61,7 @@
             </Grid>
             <TabControl x:Name="editorTabs" Grid.Row="0" Grid.Column="2" Margin="3">
                 <TabItem Header="Scene">
-                    <Canvas x:Name="scenePreview" Background="Black"/>
+                    <Canvas x:Name="scenePreview" Background="Black" ClipToBounds="True" />
                 </TabItem>
             </TabControl>
             <Grid Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="5">

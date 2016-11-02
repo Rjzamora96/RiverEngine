@@ -17,6 +17,7 @@ namespace Editor
         public List<ComponentItem> Components { get; set; }
         private string _name;
         public EntityEditor Editor { get; set; }
+        public PreviewItem Preview { get; set; }
 
         public EntityItem() : base()
         {
@@ -32,8 +33,11 @@ namespace Editor
             ContextMenu = cm;
             Editor = new EntityEditor();
             Editor.Owner = this;
+            Preview = new PreviewItem();
+            Preview.Owner = this;
             Selected += DisplayEditor;
             MouseMove += MoveEntity;
+            MainWindow.Window.scenePreview.Children.Add(Preview.Sprite);
         }
         private void MoveEntity(object sender, MouseEventArgs e)
         {
