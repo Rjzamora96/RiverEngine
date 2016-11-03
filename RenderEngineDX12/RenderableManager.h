@@ -14,6 +14,7 @@ public:
 	static void AddSprite(RiverEngine::Sprite* sprite, std::string path);
 	static void ChangeSprite(RiverEngine::Sprite* sprite, std::string path);
 	static void AddTexture(std::string path);
+	static void ClearRenderables();
 	static void Initialize();
 	static std::unordered_map<std::string, Texture*> spriteMap;
 	static RiverEngine::ArrayList<Renderable*> renderables;

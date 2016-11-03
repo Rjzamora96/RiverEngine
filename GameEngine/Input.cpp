@@ -13,6 +13,9 @@ namespace RiverEngine
 		keyMap["Down"] = Keys::Down;
 		keyMap["Left"] = Keys::Left;
 		keyMap["Right"] = Keys::Right;
+		keyMap["Q"] = Keys::Q;
+		keyMap["E"] = Keys::E;
+		keyMap["R"] = Keys::R;
 		keyMap["W"] = Keys::W;
 		keyMap["S"] = Keys::S;
 		keyMap["A"] = Keys::A;

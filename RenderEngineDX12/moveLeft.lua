@@ -3,7 +3,6 @@ Component.Property("speed", 0.0)
 local goingForward = true
 
 function Initialize(self)
- 	self.entity.transform.position.y = 300.0
 end
 
 function Update(self, dt)
@@ -33,9 +32,9 @@ function Update(self, dt)
 			self.entity.sprite.image = "cat.png"
 		end
 	end
-	if Input.IsKeyDown("Space") then
-		message = { amount = self.speed * dt }
-		self.entity:sendMessage("MoveUp", message, self)
+	if Input.IsKeyPressed("Space") then
+		entity = Scene.GetEntities()
+		entity[1].transform.position.x = 300
 	end
 end
 

@@ -11,6 +11,9 @@ namespace RiverEngine
 		void Add(T t);
 		bool Empty();
 		int Count();
+		void Clear();
+		void RemoveAt(unsigned int index);
+		T* ToArray();
 		T& operator[](int i);
 	private:
 		T* m_array;
@@ -58,6 +61,40 @@ namespace RiverEngine
 	int ArrayList<T>::Count()
 	{
 		return m_count;
+	}
+	template<class T>
+	inline void ArrayList<T>::Clear()
+	{
+		delete[] m_array;
+		m_array = new T[1];
+		m_count = 0;
+		m_size = 1;
+	}
+	template<class T>
+	inline void ArrayList<T>::RemoveAt(unsigned int index)
+	{
+		if (index < m_count) return;
+		T* temp = new T[m_count - 1];
+		unsigned int iterator = 0;
+		for (int i = 0; i < m_count; i++)
+		{
+			if (i != index)
+			{
+				T[iterator] = m_array[i];
+				iterator++;
+			}
+		}
+		delete[] m_array;
+	}
+	template<class T>
+	inline T* ArrayList<T>::ToArray()
+	{
+		T* temp = new T[m_count];
+		for (int i = 0; i < m_count; i++)
+		{
+			temp[i] = m_array[i];
+		}
+		return temp;
 	}
 	template<class T>
 	T& ArrayList<T>::operator[](int i)

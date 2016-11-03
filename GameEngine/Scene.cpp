@@ -6,6 +6,10 @@ namespace RiverEngine
 {
 	Scene* Scene::m_activeScene = 0;
 	luabridge::lua_State* Scene::L = 0;
+	bool Scene::m_toChangeScene = false;
+	ArrayList<Entity*> Scene::m_instantiateQueue = ArrayList<Entity*>();
+	std::string Scene::m_newScenePath = "";
+	ClearRenderables Scene::onSceneChange;
 
 	Scene::Scene()
 	{
@@ -13,6 +17,10 @@ namespace RiverEngine
 
 	Scene::~Scene()
 	{
+		for (int i = 0; i < m_entityList.Count(); i++)
+		{
+			delete m_entityList[i];
+		}
 	}
 
 	Scene * Scene::GetActiveScene() { return m_activeScene; }
@@ -25,6 +33,19 @@ namespace RiverEngine
 		{
 			m_activeScene->m_entityList[i]->Update(dt);
 		}
+		if (m_toChangeScene)
+		{
+			if (onSceneChange != 0) onSceneChange();
+			delete m_activeScene;
+			m_activeScene = new Scene();
+			m_activeScene->LoadSceneFromFile(m_newScenePath);
+			m_toChangeScene = false;
+		}
+		for (int i = 0; i < m_instantiateQueue.Count(); i++)
+		{
+			m_activeScene->m_entityList.Add(m_instantiateQueue[i]);
+		}
+		m_instantiateQueue.Clear();
 	}
 
 	void Scene::AddEntity(Entity * e)
@@ -39,6 +60,26 @@ namespace RiverEngine
 			if (m_activeScene->m_entityList[i]->HasTag(tag)) return m_activeScene->m_entityList[i];
 		}
 		return 0;
+	}
+	luabridge::LuaRef Scene::GetEntities()
+	{
+		luabridge::LuaRef entityArray = luabridge::LuaRef::newTable(L);
+		for (int i = 0; i < m_activeScene->m_entityList.Count(); i++)
+		{
+			entityArray[i+1] = m_activeScene->m_entityList[i];
+		}
+		return entityArray;
+	}
+	void Scene::ChangeScene(std::string path)
+	{
+		m_toChangeScene = true;
+		m_newScenePath = path;
+	}
+	void Scene::Instantiate(std::string path)
+	{
+		Entity* entity = new Entity();
+		entity->LoadComponents(path);
+		m_instantiateQueue.Add(entity);
 	}
 	void Scene::LoadSceneFromFile(std::string path)
 	{

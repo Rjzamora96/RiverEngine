@@ -2,6 +2,7 @@
 #include "RenderableManager.h"
 #include "Sprite.h"
 #include "Transform.h"
+#include "Scene.h"
 
 RiverEngine::ArrayList<Renderable*> RenderableManager::renderables = RiverEngine::ArrayList<Renderable*>();
 std::unordered_map<std::string, Texture*> RenderableManager::spriteMap;
@@ -60,9 +61,15 @@ void RenderableManager::AddTexture(std::string path)
 	}
 }
 
+void RenderableManager::ClearRenderables()
+{
+	renderables.Clear();
+}
+
 void RenderableManager::Initialize()
 {
 	RiverEngine::Sprite::addSprite = &RenderableManager::AddSprite;
 	RiverEngine::Sprite::changeSprite = &RenderableManager::ChangeSprite;
 	RiverEngine::Sprite::addTexture = &RenderableManager::AddTexture;
+	RiverEngine::Scene::onSceneChange = &RenderableManager::ClearRenderables;
 }

@@ -58,6 +58,13 @@ namespace RiverEngine
 			.addData("position", &Transform::position)
 			.endClass();
 		getGlobalNamespace(L)
+			.beginClass<Scene>("Scene")
+			.addStaticFunction("ChangeScene", &Scene::ChangeScene)
+			.addStaticFunction("Instantiate", &Scene::Instantiate)
+			.addStaticFunction("GetEntityByTag", &Scene::GetEntityByTag)
+			.addStaticFunction("GetEntities", &Scene::GetEntities)
+			.endClass();
+		getGlobalNamespace(L)
 			.deriveClass<Sprite, Component>("Sprite")
 			.addProperty("image", &Sprite::GetSprite, &Sprite::SetSprite)
 			.endClass();
