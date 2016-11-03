@@ -82,9 +82,13 @@ namespace RiverEngine
 				Sprite::addTexture(table[i].cast<std::string>());
 			}
 		}
-		Scene* scene = new Scene();
-		Scene::SetActiveScene(scene);
-		scene->LoadSceneFromFile("Scene.scene");
+		if (luaL_dofile(L, "Properties.assets") == 0)
+		{
+			LuaRef table = getGlobal(L, "properties");
+			Scene* scene = new Scene();
+			Scene::SetActiveScene(scene);
+			scene->LoadSceneFromFile(table["startScene"].cast<std::string>());
+		}
 		return true;
 	}
 

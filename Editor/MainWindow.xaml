@@ -12,6 +12,7 @@
                 <Menu>
                     <MenuItem Header="Scene">
                         <MenuItem Header="Save Scene" Click="SaveScene"/>
+                        <MenuItem Header="New Scene" Click="NewScene"/>
                     </MenuItem>
                 </Menu>
                 <Button Click="NewFile" Content="New" />

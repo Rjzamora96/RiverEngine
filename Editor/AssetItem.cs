@@ -46,9 +46,27 @@ namespace Editor
             MenuItem menuItem = new MenuItem();
             menuItem.Header = "Rename";
             menuItem.Click += RenameFile;
+            if(_file.Extension.Equals(".scene"))
+            {
+                MenuItem setAsStart = new MenuItem();
+                setAsStart.Header = "Set as Initial Scene";
+                setAsStart.Click += SetStartScene;
+                cm.Items.Add(setAsStart);
+            }
             cm.Items.Add(menuItem);
             ContextMenu = cm;
             MouseMove += MoveAsset;
+        }
+        private void SetStartScene(object sender, EventArgs e)
+        {
+            foreach(ComponentProperty property in MainWindow.Window.GameProperties)
+            {
+                if(property.Name.Equals("startScene"))
+                {
+                    property.Value = "\"" + _file.Name + "\"";
+                }
+            }
+            MainWindow.Window.SaveProperties();
         }
         private void MoveAsset(object sender, MouseEventArgs e)
         {
@@ -75,10 +93,13 @@ namespace Editor
         public void OpenScene(object sender, RoutedEventArgs e)
         {
             if (!_file.Extension.Equals(".scene")) return;
+            MainWindow.Window.SceneFile = _file.FullName;
             MainWindow.Window.sceneDisplay.Items.Clear();
+            MainWindow.Window.scenePreview.Children.Clear();
             List<string> entities = MainWindow.Window.DivideStrings(File.ReadAllText(_file.FullName));
             foreach (string entityScript in entities)
             {
+                if (entityScript.Equals("")) continue;
                 EntityItem entity = new EntityItem();
                 MainWindow.Window.sceneDisplay.Items.Add(entity);
                 Match eMatch = Regex.Match(entityScript, "{(.*)}");
@@ -113,7 +134,7 @@ namespace Editor
                     Match scriptMatch = Regex.Match(current, "script=\"(.*?)\"");
                     if (scriptMatch.Success)
                     {
-                        FileInfo compFile = new FileInfo("..\\..\\..\\RenderEngineDX12\\" + scriptMatch.Groups[1].ToString());
+                        FileInfo compFile = new FileInfo(MainWindow.AssetPath + scriptMatch.Groups[1].ToString());
                         entity.Editor.AddComponent(compFile);
                         entity.Editor.Owner.Components.Last().SetProperties(savedValues);
                     }

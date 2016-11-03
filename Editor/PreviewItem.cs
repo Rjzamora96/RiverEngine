@@ -25,7 +25,7 @@ namespace Editor
         public PreviewItem()
         {
             Sprite = new Image();
-            
+            Sprite.PreviewMouseMove += MoveItem;
             FileName = "";
         }
 
@@ -42,7 +42,22 @@ namespace Editor
                 {
                     Point mousePosition = args.GetPosition(MainWindow.Window.scenePreview);
                     X += mousePosition.X - LastMousePosition.X;
+                    Y += mousePosition.Y - LastMousePosition.Y;
                     LastMousePosition = mousePosition;
+                    foreach (ComponentItem comp in Owner.Components)
+                    {
+                        if (comp.Name.Equals("transform"))
+                        {
+                            foreach (ComponentProperty property in comp.Properties)
+                            {
+                                if (property.Name.Equals("position"))
+                                {
+                                    property.Value = "{" + X + "," + Y + "}";
+                                }
+                            }
+                        }
+                    }
+                    Owner.Editor.SyncProperties();
                 }
             }
             if(args.LeftButton == MouseButtonState.Released)
@@ -106,9 +121,9 @@ namespace Editor
                             Match match = Regex.Match(property.Value, "\"(.*)\"");
                             if (match.Success)
                             {
-                                if(File.Exists("..\\..\\..\\RenderEngineDX12\\" + match.Groups[1].ToString()))
+                                if(File.Exists(MainWindow.AssetPath + match.Groups[1].ToString()))
                                 {
-                                    FileInfo file = new FileInfo("..\\..\\..\\RenderEngineDX12\\" + match.Groups[1].ToString());
+                                    FileInfo file = new FileInfo(MainWindow.AssetPath + match.Groups[1].ToString());
                                     if(file.Extension.Equals(".png"))
                                     {
                                         if(!file.FullName.Equals(FileName))

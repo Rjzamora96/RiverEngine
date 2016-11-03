@@ -29,9 +29,18 @@ namespace Editor
         public static Point CameraPosition { get; set; }
         public Point LastMousePoint { get; set; }
         public static bool Panning { get; set; }
+        public string SceneFile { get; set; }
+        public List<ComponentProperty> GameProperties { get; set; }
+        public static string AssetPath { get; set; }
         public MainWindow()
         {
             MainWindow.Window = this;
+            AssetPath = "..\\..\\..\\RenderEngineDX12\\";
+            SceneFile = "";
+            GameProperties = new List<ComponentProperty>
+            {
+                new ComponentProperty("startScene", "")
+            };
             Scripts = new List<Script>();
             InitializeComponent();
             UpdateAssetDisplay();
@@ -50,9 +59,16 @@ namespace Editor
             timer.Interval = TimeSpan.FromTicks(0);
             timer.Tick += UpdatePreview;
             timer.Start();
-            //Image test = new Image();
-            //test.Source = new BitmapImage(new Uri("lua-icon.png", UriKind.Relative));
-            //scenePreview.Children.Add(test);
+        }
+        public void SaveProperties()
+        {
+            string result = "properties={";
+            foreach(ComponentProperty property in GameProperties)
+            {
+                result += property.Name + "=" + property.Value + ",";
+            }
+            result = result.TrimEnd(',') + "}";
+            File.WriteAllText(AssetPath + "Properties.assets", result);
         }
         private void PanScene(object sender, MouseEventArgs args)
         {
@@ -133,7 +149,7 @@ namespace Editor
                                 Match scriptMatch = Regex.Match(current, "script=\"(.*?)\"");
                                 if (scriptMatch.Success)
                                 {
-                                    FileInfo compFile = new FileInfo("..\\..\\..\\RenderEngineDX12\\" + scriptMatch.Groups[1].ToString());
+                                    FileInfo compFile = new FileInfo(AssetPath + scriptMatch.Groups[1].ToString());
                                     entity.Editor.AddComponent(compFile);
                                     entity.Editor.Owner.Components.Last().SetProperties(savedValues);
                                 }
@@ -207,7 +223,7 @@ namespace Editor
                     EntityItem entity = (EntityItem)e.Data.GetData(typeof(EntityItem));
                     if(entity != null)
                     {
-                        File.WriteAllText("..\\..\\..\\RenderEngineDX12\\" + entity.EName + ".entity", "entity=" + entity.ToString());
+                        File.WriteAllText(AssetPath + entity.EName + ".entity", "entity=" + entity.ToString());
                         UpdateAssetDisplay();
                     }
                 }
@@ -335,8 +351,22 @@ namespace Editor
                 }
             }
             result = result.TrimEnd(',') + "}";
-            File.WriteAllText("..\\..\\..\\RenderEngineDX12\\Scene.scene", result);
-            UpdateAssetDisplay();
+            if (SceneFile.Equals(""))
+            {
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                saveFileDialog.Filter = "Scene files (*.scene)|*.scene";
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    File.WriteAllText(saveFileDialog.FileName, result);
+                    SceneFile = saveFileDialog.FileName;
+                    UpdateAssetDisplay();
+                }
+            }
+            else
+            {
+                File.WriteAllText(SceneFile, result);
+                UpdateAssetDisplay();
+            }
         }
         private void NewFile(object sender, RoutedEventArgs e)
         {
@@ -347,6 +377,19 @@ namespace Editor
                 File.WriteAllText(saveFileDialog.FileName, "");
                 TextEditor activeEditor = new TextEditor();
                 activeEditor.OpenFile(saveFileDialog.FileName);
+                UpdateAssetDisplay();
+            }
+        }
+        private void NewScene(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Scene files (*.scene)|*.scene";
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                File.WriteAllText(saveFileDialog.FileName, "scene={}");
+                SceneFile = saveFileDialog.FileName;
+                MainWindow.Window.sceneDisplay.Items.Clear();
+                MainWindow.Window.scenePreview.Children.Clear();
                 UpdateAssetDisplay();
             }
         }
