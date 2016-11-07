@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace Editor
 {
@@ -18,14 +19,40 @@ namespace Editor
         private string _name;
         public EntityEditor Editor { get; set; }
         public PreviewItem Preview { get; set; }
-
+        public EntityItem EParent { get; set; }
+        public List<EntityItem> Children { get; set; }
+        private Grid _contentDisplay;
+        private Separator _depthDisplay;
+        private Button _toggleShow;
+        private bool _showingChildren = false;
         public EntityItem() : base()
         {
             Components = new List<ComponentItem>();
             nameLabel = new Label();
+            _contentDisplay = new Grid();
+            _contentDisplay.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0.0, GridUnitType.Auto) });
+            _contentDisplay.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0.0, GridUnitType.Auto) });
+            _contentDisplay.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(0.1, GridUnitType.Star) });
+            _toggleShow = new Button();
+            _toggleShow.Background = Brushes.Transparent;
+            _toggleShow.BorderBrush = Brushes.Transparent;
+            _toggleShow.BorderThickness = new Thickness(0);
+            _toggleShow.Padding = new Thickness(-4);
+            _toggleShow.Content = "+";
+            _toggleShow.Width = 30;
+            _toggleShow.HorizontalAlignment = HorizontalAlignment.Right;
+            _toggleShow.Click += ToggleShowChildren;
+            _depthDisplay = new Separator();
+            _depthDisplay.Background = Brushes.Transparent;
+            Grid.SetColumn(_depthDisplay, 0);
+            Grid.SetColumn(nameLabel, 1);
+            Grid.SetColumn(_toggleShow, 2);
+            _contentDisplay.Children.Add(_depthDisplay);
+            _contentDisplay.Children.Add(_toggleShow);
+            _contentDisplay.Children.Add(nameLabel);
             EName = "Entity";
             Tags = "{}";
-            Content = nameLabel;
+            Content = _contentDisplay;
             ContextMenu cm = new ContextMenu();
             MenuItem rename = new MenuItem();
             rename.Header = "Rename";
@@ -37,7 +64,12 @@ namespace Editor
             Preview.Owner = this;
             Selected += DisplayEditor;
             MouseMove += MoveEntity;
+            AllowDrop = true;
+            Drop += AddChild;
             MainWindow.Window.scenePreview.Children.Add(Preview.Sprite);
+            EParent = null;
+            Children = new List<EntityItem>();
+
         }
         private void MoveEntity(object sender, MouseEventArgs e)
         {
@@ -45,6 +77,51 @@ namespace Editor
             if (item != null && e.LeftButton == MouseButtonState.Pressed)
             {
                 DragDrop.DoDragDrop(item, this, DragDropEffects.All);
+            }
+        }
+        private void ToggleShowChildren(object sender, EventArgs e)
+        {
+            _showingChildren = !_showingChildren;
+            if (_showingChildren) _toggleShow.Content = "-";
+            else _toggleShow.Content = "+";
+        }
+        private void AddChild(object sender, DragEventArgs e)
+        {
+            EntityItem parent = sender as EntityItem;
+            if(parent != null)
+            {
+                if(e.Data.GetDataPresent(typeof(EntityItem)))
+                {
+                    EntityItem entity = (EntityItem)e.Data.GetData(typeof(EntityItem));
+                    if(entity.EParent != null)
+                    {
+                        EParent.Children.Remove(entity);
+                    }
+                    entity.EParent = parent;
+                    parent.Children.Add(entity);
+                    if(!parent._showingChildren) MainWindow.Window.sceneDisplay.Items.Remove(entity);
+                    int depth = 0;
+                    EntityItem iterator = entity;
+                    while(iterator.EParent != null)
+                    {
+                        depth++;
+                        iterator = iterator.EParent;
+                    }
+                    entity._depthDisplay.Width = 20 * depth;
+                    List<EntityItem> sceneClone = new List<EntityItem>();
+                    foreach(UIElement element in MainWindow.Window.sceneDisplay.Items)
+                    {
+                        EntityItem item = element as EntityItem;
+                        if(item != null)
+                        {
+                            if(item.EParent != null)
+                            {
+                                sceneClone.Add(item);
+
+                            }
+                        }
+                    }
+                }
             }
         }
         public override string ToString()
