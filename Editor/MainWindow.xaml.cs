@@ -98,7 +98,7 @@ namespace Editor
                 EntityItem entity = element as EntityItem;
                 if(entity != null)
                 {
-                    entity.Preview.Update();
+                    if(entity.EParent == null) entity.Update();
                 }
             }
         }

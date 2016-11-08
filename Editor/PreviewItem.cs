@@ -11,8 +11,15 @@ namespace Editor
 {
     public class PreviewItem
     {
-        public double X { get; set; }
-        public double Y { get; set; }
+        public Point Position {
+            get
+            {
+                Point parentPosition = new Point(0, 0);
+                if (Owner.EParent != null) parentPosition = Owner.EParent.Preview.Position;
+                return new Point(_localPosition.X + parentPosition.X, _localPosition.Y + parentPosition.Y);
+            }
+        }
+        private Point _localPosition;
         public double OriginX { get; set; }
         public double OriginY { get; set; }
         public double Rotation { get; set; }
@@ -25,24 +32,23 @@ namespace Editor
         public PreviewItem()
         {
             Sprite = new Image();
-            Sprite.PreviewMouseMove += MoveItem;
+            _localPosition = new Point();
+            Sprite.PreviewMouseDown += MoveItem;
             FileName = "";
         }
-
-        private void MoveItem(object sender, MouseEventArgs args)
+        private void CheckMouse()
         {
-            if(args.LeftButton == MouseButtonState.Pressed)
+            if (Mouse.LeftButton == MouseButtonState.Pressed)
             {
-                if(!Moving)
+                if (!Moving)
                 {
-                    LastMousePosition = args.GetPosition(MainWindow.Window.scenePreview);
+                    LastMousePosition = Mouse.GetPosition(MainWindow.Window.scenePreview);
                     Moving = true;
                 }
                 else
                 {
-                    Point mousePosition = args.GetPosition(MainWindow.Window.scenePreview);
-                    X += mousePosition.X - LastMousePosition.X;
-                    Y += mousePosition.Y - LastMousePosition.Y;
+                    Point mousePosition = Mouse.GetPosition(MainWindow.Window.scenePreview);
+                    _localPosition = new Point(_localPosition.X + (mousePosition.X - LastMousePosition.X), _localPosition.Y + (mousePosition.Y - LastMousePosition.Y));
                     LastMousePosition = mousePosition;
                     foreach (ComponentItem comp in Owner.Components)
                     {
@@ -52,7 +58,7 @@ namespace Editor
                             {
                                 if (property.Name.Equals("position"))
                                 {
-                                    property.Value = "{" + X + "," + Y + "}";
+                                    property.Value = "{" + _localPosition.X + "," + _localPosition.Y + "}";
                                 }
                             }
                         }
@@ -60,13 +66,18 @@ namespace Editor
                     Owner.Editor.SyncProperties();
                 }
             }
-            if(args.LeftButton == MouseButtonState.Released)
+            if (Mouse.LeftButton == MouseButtonState.Released)
             {
                 Moving = false;
             }
         }
+        private void MoveItem(object sender, MouseEventArgs args)
+        {
+            CheckMouse();
+        }
         public void Update()
         {
+            if (Moving) CheckMouse();
             foreach (ComponentItem comp in Owner.Components)
             {
                 if (comp.Name.Equals("transform"))
@@ -80,8 +91,8 @@ namespace Editor
                             {
                                 double x = 0;
                                 double y = 0;
-                                if (double.TryParse(match.Groups[1].ToString(), out x)) X = x;
-                                if (double.TryParse(match.Groups[2].ToString(), out y)) Y = y;
+                                if (double.TryParse(match.Groups[1].ToString(), out x)) _localPosition = new Point(x, _localPosition.Y);
+                                if (double.TryParse(match.Groups[2].ToString(), out y)) _localPosition = new Point(_localPosition.X, y);
                             }
                         }
                         else if(property.Name.Equals("rotation"))
@@ -98,7 +109,7 @@ namespace Editor
                     TransformGroup transform = new TransformGroup();
                     transform.Children.Add(new ScaleTransform(Scale, Scale));
                     transform.Children.Add(new RotateTransform(Rotation));
-                    transform.Children.Add(new TranslateTransform((X - OriginX) + MainWindow.CameraPosition.X, (Y - OriginY) + MainWindow.CameraPosition.Y));
+                    transform.Children.Add(new TranslateTransform((Position.X - OriginX) + MainWindow.CameraPosition.X, (Position.Y - OriginY) + MainWindow.CameraPosition.Y));
                     Sprite.RenderTransform = transform;
                 }
                 else if(comp.Name.Equals("sprite"))

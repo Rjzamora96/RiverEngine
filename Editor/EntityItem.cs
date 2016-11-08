@@ -84,6 +84,7 @@ namespace Editor
             _showingChildren = !_showingChildren;
             if (_showingChildren) _toggleShow.Content = "-";
             else _toggleShow.Content = "+";
+            ReloadScene();
         }
         private void AddChild(object sender, DragEventArgs e)
         {
@@ -99,28 +100,43 @@ namespace Editor
                     }
                     entity.EParent = parent;
                     parent.Children.Add(entity);
-                    if(!parent._showingChildren) MainWindow.Window.sceneDisplay.Items.Remove(entity);
-                    int depth = 0;
-                    EntityItem iterator = entity;
-                    while(iterator.EParent != null)
+                    ReloadScene();
+                }
+            }
+        }
+        private void ReloadScene()
+        {
+            List<EntityItem> sceneClone = new List<EntityItem>();
+            foreach (UIElement element in MainWindow.Window.sceneDisplay.Items)
+            {
+                EntityItem item = element as EntityItem;
+                if (item != null)
+                {
+                    if (item.EParent == null)
                     {
-                        depth++;
-                        iterator = iterator.EParent;
+                        sceneClone.Add(item);
+                        item._depthDisplay.Width = 0;
+                        item.AddChildrenToList(sceneClone, 1);
                     }
-                    entity._depthDisplay.Width = 20 * depth;
-                    List<EntityItem> sceneClone = new List<EntityItem>();
-                    foreach(UIElement element in MainWindow.Window.sceneDisplay.Items)
-                    {
-                        EntityItem item = element as EntityItem;
-                        if(item != null)
-                        {
-                            if(item.EParent != null)
-                            {
-                                sceneClone.Add(item);
-
-                            }
-                        }
-                    }
+                }
+            }
+            MainWindow.Window.sceneDisplay.Items.Clear();
+            foreach (EntityItem item in sceneClone) MainWindow.Window.sceneDisplay.Items.Add(item);
+        }
+        public void Update()
+        {
+            Preview.Update();
+            foreach (EntityItem child in Children) child.Update();
+        }
+        private void AddChildrenToList(List<EntityItem> curretList, int depth)
+        {
+            foreach(EntityItem item in Children)
+            {
+                if(!curretList.Contains(item) && _showingChildren)
+                {
+                    item._depthDisplay.Width = 20 * depth;
+                    curretList.Add(item);
+                    item.AddChildrenToList(curretList, depth+1);
                 }
             }
         }
