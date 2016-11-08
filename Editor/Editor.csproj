@@ -56,7 +56,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AssetItem.cs" />
-    <Compile Include="BasicComponentItem.cs" />
+    <Compile Include="Components\BasicComponentItem.cs" />
     <Compile Include="Components\ComponentItem.cs" />
     <Compile Include="Components\ComponentProperty.cs" />
     <Compile Include="EntityEditor.cs" />

@@ -90,6 +90,92 @@ namespace Editor
             _fileName.IsReadOnly = false;
             Keyboard.Focus(_fileName);
         }
+        public EntityItem EntityFromScript(string entityScript)
+        {
+            EntityItem entity = new EntityItem();
+            Match eMatch = Regex.Match(entityScript, "{(.*)}");
+            Group entityGroup = eMatch.Groups[0];  //AllComponents
+            string entityString = entityGroup.ToString();
+            List<string> entityProperties = MainWindow.Window.DivideStrings(entityString);
+            Match eNameMatch = Regex.Match(entityProperties[0], "name=\"(.*?)\"");
+            entity.EName = eNameMatch.Groups[1].ToString();
+            Match tagsMatch = Regex.Match(entityProperties[1], "tags=(.*)");
+            entity.Tags = tagsMatch.Groups[1].ToString();
+            Match cMatch = Regex.Match(entityProperties[2], "{(.*)}");
+            Group compGroup = cMatch.Groups[1];  //AllComponents
+            string compString = compGroup.ToString();
+            int level = 0;
+            List<string> componentStrings = new List<string>();
+            string propertyString = "";
+            for (int i = 0; i < compString.Length; i++)
+            {
+                if (compString[i].Equals('{')) level++;
+                if (level != 0) propertyString += compString[i];
+                if (compString[i].Equals('}')) level--;
+                if (level == 0 && !compString[i].Equals(','))
+                {
+                    componentStrings.Add(propertyString);
+                    propertyString = "";
+                }
+            }
+            for (int i = 0; i < componentStrings.Count; i++)
+            {
+                string current = componentStrings[i];
+                List<string> savedValues = MainWindow.Window.DivideStrings(current);
+                Match scriptMatch = Regex.Match(current, "script=\"(.*?)\"");
+                if (scriptMatch.Success)
+                {
+                    FileInfo compFile = new FileInfo(MainWindow.AssetPath + scriptMatch.Groups[1].ToString());
+                    entity.Editor.AddComponent(compFile);
+                    entity.Editor.Owner.Components.Last().SetProperties(savedValues);
+                }
+                else
+                {
+                    Match nameMatch = Regex.Match(current, "componentName=\"(.*?)\"");
+                    if (nameMatch.Groups[1].ToString().Equals("transform"))
+                    {
+                        ComponentItem transformItem = new ComponentItem
+                        {
+                            Name = "transform",
+                            Properties = new List<ComponentProperty>
+                                            {
+                                                new ComponentProperty("position","{0,0}"),
+                                                new ComponentProperty("rotation","0.0"),
+                                                new ComponentProperty("scale","1.0")
+                                            }
+                        };
+                        entity.Editor.AddComponent(transformItem);
+                        transformItem.SetProperties(savedValues);
+                    }
+                    else if (nameMatch.Groups[1].ToString().Equals("sprite"))
+                    {
+                        ComponentItem transformItem = new ComponentItem
+                        {
+                            Name = "sprite",
+                            Properties = new List<ComponentProperty>
+                                            {
+                                                new ComponentProperty("sprite","\"\""),
+                                                new ComponentProperty("origin","{0,0}")
+                                            }
+                        };
+                        entity.Editor.AddComponent(transformItem);
+                        transformItem.SetProperties(savedValues);
+                    }
+                }
+            }
+            Match childrenMatch = Regex.Match(entityProperties[3], "children=(.*)");
+            Group childGroup = childrenMatch.Groups[1];  //AllComponents
+            string childString = childGroup.ToString();
+            List<string> children = MainWindow.Window.DivideStrings(childString);
+            foreach(string child in children)
+            {
+                if (child.Equals("")) continue;
+                EntityItem item = EntityFromScript(child);
+                entity.AddChild(item);
+            }
+            entity.Editor.SyncProperties();
+            return entity;
+        }
         public void OpenScene(object sender, RoutedEventArgs e)
         {
             if (!_file.Extension.Equals(".scene")) return;
@@ -100,79 +186,7 @@ namespace Editor
             foreach (string entityScript in entities)
             {
                 if (entityScript.Equals("")) continue;
-                EntityItem entity = new EntityItem();
-                MainWindow.Window.sceneDisplay.Items.Add(entity);
-                Match eMatch = Regex.Match(entityScript, "{(.*)}");
-                Group entityGroup = eMatch.Groups[0];  //AllComponents
-                string entityString = entityGroup.ToString();
-                List<string> entityProperties = MainWindow.Window.DivideStrings(entityString);
-                Match eNameMatch = Regex.Match(entityProperties[0], "name=\"(.*?)\"");
-                entity.EName = eNameMatch.Groups[1].ToString();
-                Match tagsMatch = Regex.Match(entityProperties[1], "tags=(.*)");
-                entity.Tags = tagsMatch.Groups[1].ToString();
-                Match cMatch = Regex.Match(entityProperties[2], "{(.*)}");
-                Group compGroup = cMatch.Groups[1];  //AllComponents
-                string compString = compGroup.ToString();
-                int level = 0;
-                List<string> componentStrings = new List<string>();
-                string propertyString = "";
-                for (int i = 0; i < compString.Length; i++)
-                {
-                    if (compString[i].Equals('{')) level++;
-                    if (level != 0) propertyString += compString[i];
-                    if (compString[i].Equals('}')) level--;
-                    if (level == 0 && !compString[i].Equals(','))
-                    {
-                        componentStrings.Add(propertyString);
-                        propertyString = "";
-                    }
-                }
-                for (int i = 0; i < componentStrings.Count; i++)
-                {
-                    string current = componentStrings[i];
-                    List<string> savedValues = MainWindow.Window.DivideStrings(current);
-                    Match scriptMatch = Regex.Match(current, "script=\"(.*?)\"");
-                    if (scriptMatch.Success)
-                    {
-                        FileInfo compFile = new FileInfo(MainWindow.AssetPath + scriptMatch.Groups[1].ToString());
-                        entity.Editor.AddComponent(compFile);
-                        entity.Editor.Owner.Components.Last().SetProperties(savedValues);
-                    }
-                    else
-                    {
-                        Match nameMatch = Regex.Match(current, "componentName=\"(.*?)\"");
-                        if (nameMatch.Groups[1].ToString().Equals("transform"))
-                        {
-                            ComponentItem transformItem = new ComponentItem
-                            {
-                                Name = "transform",
-                                Properties = new List<ComponentProperty>
-                                            {
-                                                new ComponentProperty("position","{0,0}"),
-                                                new ComponentProperty("rotation","0.0"),
-                                                new ComponentProperty("scale","1.0")
-                                            }
-                            };
-                            entity.Editor.AddComponent(transformItem);
-                            transformItem.SetProperties(savedValues);
-                        }
-                        else if (nameMatch.Groups[1].ToString().Equals("sprite"))
-                        {
-                            ComponentItem transformItem = new ComponentItem
-                            {
-                                Name = "sprite",
-                                Properties = new List<ComponentProperty>
-                                            {
-                                                new ComponentProperty("sprite","\"\""),
-                                                new ComponentProperty("origin","{0,0}")
-                                            }
-                            };
-                            entity.Editor.AddComponent(transformItem);
-                            transformItem.SetProperties(savedValues);
-                        }
-                    }
-                }
-                entity.Editor.SyncProperties();
+                MainWindow.Window.sceneDisplay.Items.Add(EntityFromScript(entityScript));
             }
         }
         public void OpenScript(object sender, RoutedEventArgs e)

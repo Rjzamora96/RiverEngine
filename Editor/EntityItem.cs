@@ -86,6 +86,16 @@ namespace Editor
             else _toggleShow.Content = "+";
             ReloadScene();
         }
+        public void AddChild(EntityItem item)
+        {
+            if (item.EParent != null)
+            {
+                EParent.Children.Remove(item);
+            }
+            item.EParent = this;
+            Children.Add(item);
+            ReloadScene();
+        }
         private void AddChild(object sender, DragEventArgs e)
         {
             EntityItem parent = sender as EntityItem;
@@ -94,13 +104,7 @@ namespace Editor
                 if(e.Data.GetDataPresent(typeof(EntityItem)))
                 {
                     EntityItem entity = (EntityItem)e.Data.GetData(typeof(EntityItem));
-                    if(entity.EParent != null)
-                    {
-                        EParent.Children.Remove(entity);
-                    }
-                    entity.EParent = parent;
-                    parent.Children.Add(entity);
-                    ReloadScene();
+                    parent.AddChild(entity);
                 }
             }
         }
@@ -149,6 +153,13 @@ namespace Editor
             for(int i = 0; i < Components.Count; i++)
             {
                 result += Components[i].ToString();
+                result += ",";
+            }
+            result = result.TrimEnd(',') + "}" + ",";
+            result += "children={";
+            for(int i = 0; i < Children.Count; i++)
+            {
+                result += Children[i].ToString();
                 result += ",";
             }
             result = result.TrimEnd(',') + "}" + "}";

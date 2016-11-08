@@ -336,8 +336,11 @@ namespace Editor
         }
         private void SaveFile(object sender, RoutedEventArgs e)
         {
-            TextEditor activeEditor = (TextEditor)editorTabs.SelectedItem;
-            activeEditor.SaveFile();
+            if(editorTabs.SelectedItem != null)
+            {
+                TextEditor activeEditor = (TextEditor)editorTabs.SelectedItem;
+                activeEditor.SaveFile();
+            }
         }
         private void SaveScene(object sender, RoutedEventArgs e)
         {
@@ -345,7 +348,7 @@ namespace Editor
             foreach (UIElement element in sceneDisplay.Items)
             {
                 EntityItem entity = element as EntityItem;
-                if (entity != null)
+                if (entity != null && entity.EParent == null)
                 {
                     result += entity.ToString() + ",";
                 }

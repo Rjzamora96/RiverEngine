@@ -16,14 +16,25 @@ namespace Editor
             {
                 Point parentPosition = new Point(0, 0);
                 if (Owner.EParent != null) parentPosition = Owner.EParent.Preview.Position;
-                return new Point(_localPosition.X + parentPosition.X, _localPosition.Y + parentPosition.Y);
+                double scale = (Owner.EParent != null) ? Owner.EParent.Preview.Scale : 1.0;
+                Point unrotatedPoint = new Point((_localPosition.X * scale) + parentPosition.X, (_localPosition.Y * scale) + parentPosition.Y);
+                double cs = Math.Cos((Math.PI * Rotation) / 180);
+                double sn = Math.Sin((Math.PI * Rotation) / 180);
+                return new Point((unrotatedPoint.X * cs) - (unrotatedPoint.Y * sn), (unrotatedPoint.X * sn) + (unrotatedPoint.Y * cs));
             }
         }
         private Point _localPosition;
         public double OriginX { get; set; }
         public double OriginY { get; set; }
-        public double Rotation { get; set; }
-        public double Scale { get; set; }
+        public double Rotation { get { return (Owner.EParent != null) ? _localRotation + Owner.EParent.Preview.Rotation : _localRotation; } }
+        private double _localRotation;
+        public double Scale {
+            get
+            {
+                return (Owner.EParent != null) ? _localScale * Owner.EParent.Preview.Scale : _localScale;
+            }
+        }
+        private double _localScale;
         public Image Sprite { get; set; }
         public string FileName { get; set; }
         public EntityItem Owner { get; set; }
@@ -98,12 +109,12 @@ namespace Editor
                         else if(property.Name.Equals("rotation"))
                         {
                             double value = 0;
-                            if (double.TryParse(property.Value, out value)) Rotation = value;
+                            if (double.TryParse(property.Value, out value)) _localRotation = value;
                         }
                         else if(property.Name.Equals("scale"))
                         {
                             double value = 0;
-                            if (double.TryParse(property.Value, out value)) Scale = value;
+                            if (double.TryParse(property.Value, out value)) _localScale = value;
                         }
                     }
                     TransformGroup transform = new TransformGroup();
