@@ -30,6 +30,8 @@ namespace RiverEngine
 		luabridge::LuaRef GetComponent(std::string name);
 		void LoadComponents(std::string script);
 		void LoadComponentsFromTable(luabridge::LuaRef table);
+		Entity* parent;
+		ArrayList<Entity*> children;
 		Transform* transform;
 		Sprite* sprite;
 		bool Update(float dt);

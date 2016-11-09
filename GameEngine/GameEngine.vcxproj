@@ -243,6 +243,7 @@
     <ClCompile Include="lzio.c" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Sprite.cpp" />
+    <ClCompile Include="Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

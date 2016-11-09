@@ -64,58 +64,7 @@ namespace RiverEngine
 		if (luaL_dofile(L, script.c_str()) == 0)
 		{
 			LuaRef table = getGlobal(L, "entity");
-			LuaRef entityName = table["name"];
-			LuaRef tagList = table["tags"];
-			if (entityName.isString()) m_name = entityName.cast<std::string>();
-			if (tagList.isTable()) for (int i = 1; i <= tagList.length(); ++i) if (tagList[i].isString()) AddTag(tagList[i].cast<std::string>());
-			LuaRef compTable = table["components"];
-			for (int i = 1; i <= compTable.length(); ++i)
-			{
-				Component* c = new Component();
-				LuaRef subTable = compTable[i];
-				if (subTable["script"].isString())
-				{
-					c->SetScript(subTable["script"]);
-				}
-				if (subTable["componentName"].isString())
-				{
-					if (subTable["componentName"].cast<std::string>().compare("transform") == 0)
-					{
-						delete c;
-						c = new Transform();
-						LuaRef position = subTable["position"];
-						((Transform*)c)->position->x = position[1].cast<float>();
-						((Transform*)c)->position->y = position[2].cast<float>();
-						((Transform*)c)->rotation = subTable["rotation"].cast<float>();
-						((Transform*)c)->scale = subTable["scale"].cast<float>();
-						AddComponent(c, "transform");
-					}
-					else if (subTable["componentName"].cast<std::string>().compare("sprite") == 0)
-					{
-						delete c;
-						c = new Sprite();
-						LuaRef origin = subTable["origin"];
-						((Sprite*)c)->origin.x = origin[1].cast<float>();
-						((Sprite*)c)->origin.y = origin[2].cast<float>();
-						AddComponent(c, "sprite");
-						Sprite::addSprite((Sprite*)c, subTable["sprite"].cast<std::string>());
-					}
-					else AddComponent(c, subTable["componentName"]);
-				}
-				c->Init();
-				ArrayList<std::string> keyList = c->GetKeyList();
-				LuaRef properties = c->GetProperties();
-				for (int j = 0; j < keyList.Count(); ++j)
-				{
-					std::string key = keyList[j];
-					if (!subTable[key].isNil())
-					{
-						LuaRef value = subTable[key];
-						properties[key] = value;
-					}
-					//subTable[key];
-				}
-			}
+			LoadComponentsFromTable(table);
 		}
 	}
 
@@ -174,6 +123,15 @@ namespace RiverEngine
 				//subTable[key];
 			}
 		}
+		LuaRef childrenTable = table["children"];
+		for (int i = 1; i <= childrenTable.length(); i++)
+		{
+			Entity* child = new Entity();
+			child->LoadComponentsFromTable(childrenTable[i]);
+			children.Add(child);
+			child->parent = this;
+		}
+
 	}
 
 	bool Entity::Update(float dt)

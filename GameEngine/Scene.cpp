@@ -51,6 +51,10 @@ namespace RiverEngine
 	void Scene::AddEntity(Entity * e)
 	{
 		m_activeScene->m_entityList.Add(e);
+		for (int i = 0; i < e->children.Count(); i++)
+		{
+			m_activeScene->m_entityList.Add(e);
+		}
 	}
 
 	Entity * Scene::GetEntityByTag(std::string tag)
