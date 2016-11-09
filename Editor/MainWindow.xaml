@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Editor"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="800">
+        Title="River Engine" Height="600" Width="800">
     <DockPanel>
         <ToolBarTray DockPanel.Dock="Top">
             <ToolBar>
@@ -50,19 +50,40 @@
                   HorizontalAlignment="Stretch" 
                   Grid.Row="1" Grid.ColumnSpan="5" ResizeBehavior="PreviousAndNext"
                   Height="5" Background="#FFBCBCBC"/>
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Label Content="Scene" Grid.Column="0" Grid.Row="0"/>
-                <ListBox x:Name="sceneDisplay" Grid.Column="0" Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
-                    
-                </ListBox>
-            </Grid>
+            <TabControl Grid.Row="0" Grid.Column="0">
+                <TabItem Header="Entities">
+                    <ListBox x:Name="sceneDisplay" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
+                </TabItem>
+                <TabItem Header="Tiles">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="75"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Content="Tile Size:" Grid.Column="0"/>
+                            <TextBox x:Name="tileSize" Grid.Column="1" Text="1" VerticalContentAlignment="Center"/>
+                        </Grid>
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="75"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Content="Map Size:" Grid.Column="0"/>
+                            <TextBox x:Name="mapSizeX" Grid.Column="1" Text="800" VerticalContentAlignment="Center"/>
+                            <TextBox x:Name="mapSizeY" Grid.Column="2" Text="600" VerticalContentAlignment="Center"/>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+            </TabControl>
             <TabControl x:Name="editorTabs" Grid.Row="0" Grid.Column="2" Margin="3">
                 <TabItem Header="Scene">
-                    <Canvas x:Name="scenePreview" Background="CornflowerBlue" ClipToBounds="True" />
+                    <Canvas x:Name="scenePreview" Background="Black" ClipToBounds="True"/>
                 </TabItem>
             </TabControl>
             <Grid Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="5">

@@ -14,6 +14,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using System.Windows.Shapes;
 using System.Windows.Threading;
 
 namespace Editor
@@ -30,6 +31,9 @@ namespace Editor
         public Point LastMousePoint { get; set; }
         public static bool Panning { get; set; }
         public string SceneFile { get; set; }
+        public Rectangle _mapBorder;
+        private Point _mapSize { get; set; }
+        private int _tileSize { get; set; }
         public List<ComponentProperty> GameProperties { get; set; }
         public static string AssetPath { get; set; }
         public MainWindow()
@@ -59,6 +63,20 @@ namespace Editor
             timer.Interval = TimeSpan.FromTicks(0);
             timer.Tick += UpdatePreview;
             timer.Start();
+            _mapBorder = new Rectangle();
+            _mapSize = new Point(800, 600);
+            _tileSize = 1;
+            SolidColorBrush brush = new SolidColorBrush(Color.FromArgb(255, 50, 50, 50));
+            _mapBorder.Fill = brush;
+            scenePreview.Children.Add(_mapBorder);
+            DrawMapBorder();
+        }
+        private void DrawMapBorder()
+        {
+            _mapBorder.Width = _mapSize.X * _tileSize;
+            _mapBorder.Height = _mapSize.Y * _tileSize;
+            Canvas.SetTop(_mapBorder, CameraPosition.Y);
+            Canvas.SetLeft(_mapBorder, CameraPosition.X);
         }
         public void SaveProperties()
         {
@@ -93,7 +111,7 @@ namespace Editor
         }
         private void UpdatePreview(object sender, EventArgs e)
         {
-            foreach(UIElement element in sceneDisplay.Items)
+            foreach (UIElement element in sceneDisplay.Items)
             {
                 EntityItem entity = element as EntityItem;
                 if(entity != null)
@@ -251,7 +269,7 @@ namespace Editor
                     Script script = new Script
                     {
                         File = file,
-                        Name = Path.GetFileNameWithoutExtension(file.Name),
+                        Name = System.IO.Path.GetFileNameWithoutExtension(file.Name),
                         IsUserDefined = false
                     };
                     script.Header = script.Name;
