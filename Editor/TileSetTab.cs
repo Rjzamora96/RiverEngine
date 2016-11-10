@@ -66,6 +66,7 @@ namespace Editor
                     {
                         CroppedBitmap cropped = new CroppedBitmap(bitmap, new Int32Rect(MainWindow.Window.TileSize * x, MainWindow.Window.TileSize * y, MainWindow.Window.TileSize, MainWindow.Window.TileSize));
                         TileItem item = new TileItem();
+                        item.Padding = new Thickness(0);
                         item.OriginalFile = openFileDialog.FileName;
                         item.Image.Source = cropped;
                         Grid.SetColumn(item, x);
