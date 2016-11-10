@@ -64,6 +64,9 @@
     <Compile Include="PreviewItem.cs" />
     <Compile Include="Script.cs" />
     <Compile Include="TextEditor.cs" />
+    <Compile Include="Tile.cs" />
+    <Compile Include="TileItem.cs" />
+    <Compile Include="TileSetTab.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

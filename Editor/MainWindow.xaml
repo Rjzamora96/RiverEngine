@@ -59,25 +59,41 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <Grid Grid.Row="0">
+                        <Label Grid.Row="0" Content="Map Dimensions"/>
+                        <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="75"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Label Content="Tile Size:" Grid.Column="0"/>
-                            <TextBox x:Name="tileSize" Grid.Column="1" Text="1" VerticalContentAlignment="Center"/>
+                            <TextBox x:Name="tileSize" Grid.Column="1" Text="16" VerticalContentAlignment="Center"/>
                         </Grid>
-                        <Grid Grid.Row="1">
+                        <Grid Grid.Row="2">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="75"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Label Content="Map Size:" Grid.Column="0"/>
-                            <TextBox x:Name="mapSizeX" Grid.Column="1" Text="800" VerticalContentAlignment="Center"/>
-                            <TextBox x:Name="mapSizeY" Grid.Column="2" Text="600" VerticalContentAlignment="Center"/>
+                            <TextBox x:Name="mapSizeX" Grid.Column="1" Text="10" VerticalContentAlignment="Center"/>
+                            <TextBox x:Name="mapSizeY" Grid.Column="2" Text="10" VerticalContentAlignment="Center"/>
                         </Grid>
+                        <Button Grid.Row="3" Content="Apply" Margin="3" Click="ApplyMapChanges"/>
+                        <Label Grid.Row="4" Content="Tile Sets"/>
+                        <TabControl x:Name="tileSets" Grid.Row="5">
+                            <TabItem>
+                                <TabItem.HeaderTemplate>
+                                    <DataTemplate>
+                                        <Button Content="+" Width="20" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Click="AddTileSet"/>
+                                    </DataTemplate>
+                                </TabItem.HeaderTemplate>
+                            </TabItem>
+                        </TabControl>
                     </Grid>
                 </TabItem>
             </TabControl>

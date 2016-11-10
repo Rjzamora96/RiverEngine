@@ -53,9 +53,9 @@ namespace RiverEngine
 			.addData("entity", &Component::owner)
 			.endClass()
 			.deriveClass<Transform, Component>("Transform")
-			.addData("rotation", &Transform::rotation)
-			.addData("scale", &Transform::scale)
-			.addData("position", &Transform::position)
+			.addData("rotation", &Transform::localRotation)
+			.addData("scale", &Transform::localScale)
+			.addData("position", &Transform::localPosition)
 			.endClass();
 		getGlobalNamespace(L)
 			.beginClass<Scene>("Scene")

@@ -14,22 +14,6 @@ namespace RiverEngine
 		float rotation;
 		float localScale;
 		float scale;
-		void SetPosition(Vector2 vector)
-		{
-			localPosition->x = vector.x;
-			localPosition->y = vector.y;
-			Entity* parent = owner->parent;
-			if (parent != 0)
-			{
-				Transform* parentTransform = parent->GetComponentByType<Transform>();
-				if (parentTransform != 0)
-				{
-					localPosition->x = (vector.x - parentTransform->position->x)/parentTransform->scale;
-					localPosition->y = (vector.y - parentTransform->position->y)/parentTransform->scale;
-				}
-			}
-		}
-		Vector2* GetPosition(){ return position; }
 		bool Update(float dt);
 	};
 }

@@ -122,12 +122,15 @@ namespace Editor
         }
         public void AddComponent(ComponentItem item)
         {
+            ComponentItem component = new ComponentItem();
+            component.Name = item.Name;
+            component.Properties = new List<ComponentProperty>(item.Properties);
             _entityProperties.RowDefinitions.Add(new RowDefinition { Height = new GridLength(0.0, GridUnitType.Auto) });
             Label compName = new Label();
-            compName.Content = item.Name;
+            compName.Content = component.Name;
             Grid.SetRow(compName, _entityProperties.Children.Count);
             _entityProperties.Children.Add(compName);
-            foreach (ComponentProperty prop in item.Properties)
+            foreach (ComponentProperty prop in component.Properties)
             {
                 _entityProperties.RowDefinitions.Add(new RowDefinition { Height = new GridLength(0.0, GridUnitType.Auto) });
                 PropertyLine line = new PropertyLine(prop.Name + ": ");
@@ -136,7 +139,7 @@ namespace Editor
                 _entityProperties.Children.Add(line);
                 line.Bound = prop;
             }
-            Owner.Components.Add(item);
+            Owner.Components.Add(component);
         }
         public void AddComponent(FileInfo file)
         {

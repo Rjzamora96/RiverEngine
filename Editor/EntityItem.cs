@@ -104,7 +104,7 @@ namespace Editor
                 if(e.Data.GetDataPresent(typeof(EntityItem)))
                 {
                     EntityItem entity = (EntityItem)e.Data.GetData(typeof(EntityItem));
-                    parent.AddChild(entity);
+                    if(parent != entity) parent.AddChild(entity);
                 }
             }
         }

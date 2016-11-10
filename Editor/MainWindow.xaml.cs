@@ -31,9 +31,10 @@ namespace Editor
         public Point LastMousePoint { get; set; }
         public static bool Panning { get; set; }
         public string SceneFile { get; set; }
-        public Rectangle _mapBorder;
+        public List<Tile> _map;
+        private List<Line> _mapGrid;
         private Point _mapSize { get; set; }
-        private int _tileSize { get; set; }
+        public int TileSize { get; set; }
         public List<ComponentProperty> GameProperties { get; set; }
         public static string AssetPath { get; set; }
         public MainWindow()
@@ -63,20 +64,19 @@ namespace Editor
             timer.Interval = TimeSpan.FromTicks(0);
             timer.Tick += UpdatePreview;
             timer.Start();
-            _mapBorder = new Rectangle();
+            _mapGrid = new List<Line>();
+            _map = new List<Tile>();
             _mapSize = new Point(800, 600);
-            _tileSize = 1;
-            SolidColorBrush brush = new SolidColorBrush(Color.FromArgb(255, 50, 50, 50));
-            _mapBorder.Fill = brush;
-            scenePreview.Children.Add(_mapBorder);
+            TileSize = 1;
             DrawMapBorder();
         }
         private void DrawMapBorder()
         {
-            _mapBorder.Width = _mapSize.X * _tileSize;
-            _mapBorder.Height = _mapSize.Y * _tileSize;
-            Canvas.SetTop(_mapBorder, CameraPosition.Y);
-            Canvas.SetLeft(_mapBorder, CameraPosition.X);
+            foreach(Tile square in _map)
+            {
+                Canvas.SetTop(square.Rect, CameraPosition.Y);
+                Canvas.SetLeft(square.Rect, CameraPosition.X);
+            }
         }
         public void SaveProperties()
         {
@@ -111,6 +111,7 @@ namespace Editor
         }
         private void UpdatePreview(object sender, EventArgs e)
         {
+            DrawMapBorder();
             foreach (UIElement element in sceneDisplay.Items)
             {
                 EntityItem entity = element as EntityItem;
@@ -413,6 +414,100 @@ namespace Editor
                 MainWindow.Window.scenePreview.Children.Clear();
                 UpdateAssetDisplay();
             }
+        }
+
+        private void ApplyMapChanges(object sender, RoutedEventArgs e)
+        {
+            int newMapX = 0;
+            int newMapY = 0;
+            if(int.TryParse(mapSizeX.Text, out newMapX) && int.TryParse(mapSizeY.Text, out newMapY)) _mapSize = new Point(newMapX, newMapY);
+            int newTileSize = 0;
+            if (int.TryParse(tileSize.Text, out newTileSize)) TileSize = newTileSize;
+            foreach (Tile square in _map)
+            {
+                scenePreview.Children.Remove(square.Rect);
+            }
+            _map.Clear();
+            for(int i = 0; i < _mapSize.X; i++)
+            {
+                for(int j = 0; j < _mapSize.Y; j++)
+                {
+                    Rectangle square = new Rectangle();
+                    square.Width = TileSize;
+                    square.Height = TileSize;
+                    TransformGroup transform = new TransformGroup();
+                    transform.Children.Add(new TranslateTransform(i * TileSize, j * TileSize));
+                    square.RenderTransform = transform;
+                    square.Stroke = Brushes.Black;
+                    square.Fill = Brushes.Gray;
+                    square.StrokeThickness = 1;
+                    square.MouseEnter += OnMouseEnterTile;
+                    square.MouseEnter += OnMouseDownTile;
+                    square.MouseLeave += OnMouseLeaveTile;
+                    square.MouseDown += OnMouseDownTile;
+                    Canvas.SetZIndex(square, -1000);
+                    scenePreview.Children.Add(square);
+                    Tile tile = new Tile { Rect = square };
+                    _map.Add(tile);
+                }
+            }
+        }
+        private void OnMouseEnterTile(object sender, MouseEventArgs e)
+        {
+            Rectangle square = sender as Rectangle;
+            if(square != null)
+            {
+                TileSetTab tileSet = tileSets.SelectedItem as TileSetTab;
+                if (tileSet != null)
+                {
+                    if(tileSet.SelectedTile != null)
+                    {
+                        Tile tile = _map.Where(x => x.Rect == sender as Rectangle).First();
+                        if(!tile.IsFilled)
+                        {
+                            square.StrokeThickness = 0;
+                            square.Fill = new ImageBrush(tileSet.SelectedTile.Image.Source);
+                        }
+                    }
+                }
+            }
+        }
+        private void OnMouseDownTile(object sender, MouseEventArgs e)
+        {
+            if(e.LeftButton == MouseButtonState.Pressed)
+            {
+                TileSetTab tileSet = tileSets.SelectedItem as TileSetTab;
+                if (tileSet != null)
+                {
+                    if (tileSet.SelectedTile != null)
+                    {
+                        Tile tile = _map.Where(x => x.Rect == sender as Rectangle).FirstOrDefault();
+                        tile.Rect.StrokeThickness = 0;
+                        tile.Rect.Fill = new ImageBrush(tileSet.SelectedTile.Image.Source);
+                        tile.IsFilled = true;
+                    }
+                }
+            }
+        }
+        private void OnMouseLeaveTile(object sender, MouseEventArgs e)
+        {
+            Rectangle square = sender as Rectangle;
+            if (square != null)
+            {
+                Tile tile = _map.Where(x => x.Rect == sender as Rectangle).FirstOrDefault();
+                if(!tile.IsFilled)
+                {
+                    square.Fill = Brushes.Gray;
+                    square.StrokeThickness = 1;
+                }
+            }
+        }
+        private void AddTileSet(object sender, RoutedEventArgs e)
+        {
+            TileSetTab item = new TileSetTab();
+            item.Header = "Set " + tileSets.Items.Count;
+            tileSets.Items.Insert(tileSets.Items.Count - 1, item);
+            tileSets.SelectedItem = item;
         }
     }
 }

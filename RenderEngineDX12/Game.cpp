@@ -111,7 +111,7 @@ void Game::Render()
 		RiverEngine::Vector2 ori = RenderableManager::renderables[i]->sprite->origin;
 		m_spriteBatch->Draw(m_resourceDescriptors->GetGpuHandle(RenderableManager::renderables[i]->texture->id),
 			GetTextureSize(RenderableManager::renderables[i]->texture->texture.Get()),
-			Vector2(vec->x, vec->y), nullptr, Colors::White, RenderableManager::renderables[i]->transform->rotation, Vector2(ori.x, ori.y));
+			Vector2(vec->x, vec->y), nullptr, Colors::White, RenderableManager::renderables[i]->transform->rotation, Vector2(ori.x, ori.y), RenderableManager::renderables[i]->transform->scale);
 	}
 	m_spriteBatch->End();
 

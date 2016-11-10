@@ -14,13 +14,17 @@ namespace Editor
         public Point Position {
             get
             {
-                Point parentPosition = new Point(0, 0);
-                if (Owner.EParent != null) parentPosition = Owner.EParent.Preview.Position;
-                double scale = (Owner.EParent != null) ? Owner.EParent.Preview.Scale : 1.0;
-                Point unrotatedPoint = new Point((_localPosition.X * scale) + parentPosition.X, (_localPosition.Y * scale) + parentPosition.Y);
-                double cs = Math.Cos((Math.PI * Rotation) / 180);
-                double sn = Math.Sin((Math.PI * Rotation) / 180);
-                return new Point((unrotatedPoint.X * cs) - (unrotatedPoint.Y * sn), (unrotatedPoint.X * sn) + (unrotatedPoint.Y * cs));
+                if (Owner.EParent != null)
+                {
+                    Point parentPosition = new Point(0, 0);
+                    parentPosition = Owner.EParent.Preview.Position;
+                    double scale = (Owner.EParent != null) ? Owner.EParent.Preview.Scale : 1.0;
+                    Point unrotatedPoint = new Point((_localPosition.X * scale) + parentPosition.X, (_localPosition.Y * scale) + parentPosition.Y);
+                    double cs = Math.Cos((Math.PI * Rotation) / 180);
+                    double sn = Math.Sin((Math.PI * Rotation) / 180);
+                    return new Point((unrotatedPoint.X * cs) - (unrotatedPoint.Y * sn), (unrotatedPoint.X * sn) + (unrotatedPoint.Y * cs));
+                }
+                return _localPosition;
             }
         }
         private Point _localPosition;

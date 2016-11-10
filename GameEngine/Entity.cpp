@@ -91,10 +91,10 @@ namespace RiverEngine
 					delete c;
 					c = new Transform();
 					LuaRef position = subTable["position"];
-					((Transform*)c)->position->x = position[1].cast<float>();
-					((Transform*)c)->position->y = position[2].cast<float>();
-					((Transform*)c)->rotation = subTable["rotation"].cast<float>();
-					((Transform*)c)->scale = subTable["scale"].cast<float>();
+					((Transform*)c)->localPosition->x = position[1].cast<float>();
+					((Transform*)c)->localPosition->y = position[2].cast<float>();
+					((Transform*)c)->localRotation = subTable["rotation"].cast<float>();
+					((Transform*)c)->localScale = subTable["scale"].cast<float>();
 					AddComponent(c, "transform");
 				}
 				else if (subTable["componentName"].cast<std::string>().compare("sprite") == 0)

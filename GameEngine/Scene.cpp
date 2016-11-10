@@ -53,7 +53,7 @@ namespace RiverEngine
 		m_activeScene->m_entityList.Add(e);
 		for (int i = 0; i < e->children.Count(); i++)
 		{
-			m_activeScene->m_entityList.Add(e);
+			m_activeScene->AddEntity(e->children[i]);
 		}
 	}
 
@@ -62,6 +62,11 @@ namespace RiverEngine
 		for (int i = 0; i < m_activeScene->m_entityList.Count(); i++)
 		{
 			if (m_activeScene->m_entityList[i]->HasTag(tag)) return m_activeScene->m_entityList[i];
+			else
+			{
+				Entity* result = m_activeScene->m_entityList[i]->GetChildByTag(tag);
+				if (result != 0) return result;
+			}
 		}
 		return 0;
 	}

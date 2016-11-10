@@ -14,6 +14,8 @@ bool RiverEngine::Transform::Update(float dt)
 	*/
 	position->x = localPosition->x;
 	position->y = localPosition->y;
+	rotation = localRotation;
+	scale = localScale;
 	Entity* parent = owner->parent;
 	if (parent != 0)
 	{
@@ -22,11 +24,11 @@ bool RiverEngine::Transform::Update(float dt)
 		{
 			scale = localScale * parentTransform->scale;
 			rotation = localRotation + parentTransform->rotation;
-			Vector2 unrotated((localPosition->x * parentTransform->scale) + parentTransform->position->x, (localPosition->y * parentTransform->scale) + parentTransform->position->y);
-			float cs = cosf((3.14f * rotation) / 180.0f);
-			float sn = sinf((3.14f * rotation) / 180.0f);
-			position->x = (unrotated.x * cs) - (unrotated.y * sn);
-			position->y = (unrotated.x * sn) + (unrotated.y * cs);
+			Vector2 unrotated((localPosition->x * parentTransform->scale), (localPosition->y * parentTransform->scale));
+			float cs = cosf(rotation);
+			float sn = sinf(rotation);
+			position->x = (unrotated.x * cs) - (unrotated.y * sn) + parentTransform->position->x;
+			position->y = (unrotated.x * sn) + (unrotated.y * cs) + parentTransform->position->y;
 		}
 	}
 	return true;
