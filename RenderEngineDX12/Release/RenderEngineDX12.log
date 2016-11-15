@@ -1,0 +1,13 @@
+﻿  pch.cpp
+  Game.cpp
+d:\riverengine\gameengine\Entity.h(23): warning C4114: same type qualifier used more than once
+  InputManager.cpp
+  Main.cpp
+d:\riverengine\gameengine\Entity.h(23): warning C4114: same type qualifier used more than once
+  RenderableManager.cpp
+d:\riverengine\gameengine\Entity.h(23): warning C4114: same type qualifier used more than once
+  Generating code
+  All 2352 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  RenderEngineDX12.vcxproj -> D:\RiverEngine\Release\RenderEngineDX12.exe
+  RenderEngineDX12.vcxproj -> D:\RiverEngine\Release\RenderEngineDX12.pdb (Full PDB)

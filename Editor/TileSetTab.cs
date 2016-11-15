@@ -14,6 +14,7 @@ namespace Editor
     {
         public ListBox Tiles { get; set; }
         public TileItem SelectedTile { get; set; }
+        public string Source { get; set; }
         private Grid _grid;
         public TileSetTab() : base()
         {
@@ -42,6 +43,7 @@ namespace Editor
             if (openFileDialog.ShowDialog() == true)
             {
                 BitmapImage bitmap = new BitmapImage(new Uri(openFileDialog.FileName, UriKind.RelativeOrAbsolute));
+                Source = openFileDialog.FileName;
                 int columns = ((int)bitmap.PixelWidth / MainWindow.Window.TileSize);
                 int rows = ((int)bitmap.PixelHeight / MainWindow.Window.TileSize);
                 FrameworkElementFactory gridPanel = new FrameworkElementFactory(typeof(Grid));

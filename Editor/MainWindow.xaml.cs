@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -259,7 +260,7 @@ namespace Editor
             assetDisplay.Items.Clear();
             basicsDisplay.Items.Clear();
             Scripts.Clear();
-            DirectoryInfo dir = new DirectoryInfo("..\\..\\..\\RenderEngineDX12");
+            DirectoryInfo dir = new DirectoryInfo(AssetPath);
             IEnumerable<FileInfo> files = dir.EnumerateFiles();
             string spriteList = "sprites={";
             foreach (FileInfo file in files)
@@ -285,7 +286,7 @@ namespace Editor
                 assetDisplay.Items.Add(item);
             }
             spriteList = spriteList.TrimEnd(',') + "}";
-            File.WriteAllText("..\\..\\..\\RenderEngineDX12\\Sprites.assets", spriteList);
+            File.WriteAllText(AssetPath + "\\Sprites.assets", spriteList);
             ComponentItem transformItem = new ComponentItem
             {
                 Name = "transform",
@@ -360,6 +361,14 @@ namespace Editor
                 TextEditor activeEditor = (TextEditor)editorTabs.SelectedItem;
                 activeEditor.SaveFile();
             }
+        }
+        private void PlayGame(object sender, RoutedEventArgs e)
+        {
+            Process game = new Process();
+            game.StartInfo.FileName = AssetPath + "RenderEngineDX12.exe";
+            game.StartInfo.UseShellExecute = false;
+            game.StartInfo.WorkingDirectory = System.IO.Path.GetFullPath(AssetPath);
+            game.Start();
         }
         private void SaveScene(object sender, RoutedEventArgs e)
         {
@@ -485,6 +494,7 @@ namespace Editor
                         tile.Rect.StrokeThickness = 0;
                         tile.Rect.Fill = new ImageBrush(tileSet.SelectedTile.Image.Source);
                         tile.IsFilled = true;
+                        tile.Source = tileSet.Source;
                     }
                 }
             }
@@ -508,6 +518,25 @@ namespace Editor
             item.Header = "Set " + tileSets.Items.Count;
             tileSets.Items.Insert(tileSets.Items.Count - 1, item);
             tileSets.SelectedItem = item;
+        }
+
+        private void NewProject(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "River files (*.river)|*.river";
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                string directory = System.IO.Path.GetDirectoryName(saveFileDialog.FileName) + "\\" + System.IO.Path.GetFileNameWithoutExtension(saveFileDialog.SafeFileName) + "\\";
+                Directory.CreateDirectory(directory);
+                AssetPath = directory + "Assets\\";
+                Directory.CreateDirectory(AssetPath);
+                File.WriteAllText(directory + saveFileDialog.SafeFileName, "test");
+                File.Copy("..\\..\\..\\RenderEngineDX12\\RenderEngineDX12.exe", directory + System.IO.Path.GetFileNameWithoutExtension(saveFileDialog.SafeFileName) + ".exe");
+                SceneFile = saveFileDialog.FileName;
+                MainWindow.Window.sceneDisplay.Items.Clear();
+                MainWindow.Window.scenePreview.Children.Clear();
+                UpdateAssetDisplay();
+            }
         }
     }
 }

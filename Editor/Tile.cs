@@ -11,5 +11,6 @@ namespace Editor
     {
         public Rectangle Rect { get; set; }
         public bool IsFilled { get; set; }
+        public string Source { get; set; }
     }
 }

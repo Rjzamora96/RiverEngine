@@ -10,19 +10,25 @@
         <ToolBarTray DockPanel.Dock="Top">
             <ToolBar>
                 <Menu>
+                    <MenuItem Header="Project">
+                        <MenuItem Header="Save Project" Click="SaveScene"/>
+                        <MenuItem Header="New Project" Click="NewProject"/>
+                    </MenuItem>
+                </Menu>
+                <Menu>
                     <MenuItem Header="Scene">
                         <MenuItem Header="Save Scene" Click="SaveScene"/>
                         <MenuItem Header="New Scene" Click="NewScene"/>
                     </MenuItem>
                 </Menu>
-                <Button Click="NewFile" Content="New" />
-                <Button Click="OpenFile" Content="Open" />
-                <Button Click="SaveFile" Content="Save" />
-            </ToolBar>
-            <ToolBar>
-                <Button Command="Cut" Content="Cut" />
-                <Button Command="Copy" Content="Copy" />
-                <Button Command="Paste" Content="Paste" />
+                <Menu>
+                    <MenuItem Header="Script">
+                        <MenuItem Header="New Script" Click="NewFile"/>
+                        <MenuItem Header="Open Script" Click="OpenFile"/>
+                        <MenuItem Header="Save Script" Click="SaveFile"/>
+                    </MenuItem>
+                </Menu>
+                <Button Click="PlayGame" Content="Play"/>
             </ToolBar>
         </ToolBarTray>
         <Grid x:Name="masterGrid">
