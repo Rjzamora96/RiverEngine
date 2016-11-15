@@ -9,12 +9,14 @@
 #include "LuaBridge.h"
 #include "RefCountedPtr.h"
 #include "Scene.h"
-
+#include <Windows.h>
 extern "C" {
 # include "lua.h"
 # include "lauxlib.h"
 # include "lualib.h"
 }
+
+#undef SendMessage;
 
 using namespace luabridge;
 
@@ -32,6 +34,12 @@ namespace RiverEngine
 	using namespace RiverEngine;
 	bool Engine::Init()
 	{
+		wchar_t currDir[MAX_PATH];
+		GetCurrentDirectoryW(MAX_PATH, currDir);
+		std::string s = "\\Assets\\";
+		std::wstring stemp = currDir + std::wstring(s.begin(), s.end());
+		LPCWSTR sw = stemp.c_str();
+		SetCurrentDirectoryW(sw);
 		luabridge::lua_State* L = luaL_newstate();
 		luaL_openlibs(L);
 		getGlobalNamespace(L)

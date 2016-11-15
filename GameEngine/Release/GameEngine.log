@@ -1,52 +1,5 @@
-﻿  Component.cpp
-d:\riverengine\gameengine\Entity.h(23): warning C4114: same type qualifier used more than once
-  Engine.cpp
-d:\riverengine\gameengine\Entity.h(23): warning C4114: same type qualifier used more than once
-  Entity.cpp
-d:\riverengine\gameengine\Entity.h(23): warning C4114: same type qualifier used more than once
-Entity.cpp(21): warning C4114: same type qualifier used more than once
-  Input.cpp
-  Scene.cpp
-d:\riverengine\gameengine\Entity.h(23): warning C4114: same type qualifier used more than once
-  Sprite.cpp
-d:\riverengine\gameengine\Entity.h(23): warning C4114: same type qualifier used more than once
-  Transform.cpp
-d:\riverengine\gameengine\Entity.h(23): warning C4114: same type qualifier used more than once
-  lapi.c
-  lauxlib.c
-  lbaselib.c
-  lbitlib.c
-  lcode.c
-  lcorolib.c
-  lctype.c
-  ldblib.c
-  ldebug.c
-  ldo.c
-  ldump.c
-  lfunc.c
-  lgc.c
-  linit.c
-  liolib.c
-  llex.c
-  lmathlib.c
-  lmem.c
-  loadlib.c
-  lobject.c
-  Compiling...
-  lopcodes.c
-  loslib.c
-  lparser.c
-  lstate.c
-  lstring.c
-  lstrlib.c
-  ltable.c
-  ltablib.c
-  ltm.c
-  lua.c
-  luac.c
-  lundump.c
-  lutf8lib.c
-  lvm.c
-  lzio.c
+﻿  Engine.cpp
+c:\users\jacob zamora\riverengine\gameengine\Entity.h(23): warning C4114: same type qualifier used more than once
+Engine.cpp(19): warning C4067: unexpected tokens following preprocessor directive - expected a newline
   LINK : MSIL .netmodule or module compiled with /GL found; restarting link with /LTCG; add /LTCG to the link command line to improve linker performance
-  GameEngine.vcxproj -> D:\RiverEngine\Release\GameEngine.lib
+  GameEngine.vcxproj -> C:\Users\Jacob Zamora\RiverEngine\Release\GameEngine.lib

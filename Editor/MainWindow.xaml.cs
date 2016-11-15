@@ -38,10 +38,12 @@ namespace Editor
         public int TileSize { get; set; }
         public List<ComponentProperty> GameProperties { get; set; }
         public static string AssetPath { get; set; }
+        public static string DirectoryPath { get; set; }
         public MainWindow()
         {
             MainWindow.Window = this;
-            AssetPath = "..\\..\\..\\RenderEngineDX12\\";
+            AssetPath = "..\\..\\..\\RenderEngineDX12\\Assets\\";
+            DirectoryPath = "..\\..\\..\\RenderEngineDX12\\";
             SceneFile = "";
             GameProperties = new List<ComponentProperty>
             {
@@ -365,7 +367,7 @@ namespace Editor
         private void PlayGame(object sender, RoutedEventArgs e)
         {
             Process game = new Process();
-            game.StartInfo.FileName = AssetPath + "RenderEngineDX12.exe";
+            game.StartInfo.FileName = DirectoryPath + "RenderEngineDX12.exe";
             game.StartInfo.UseShellExecute = false;
             game.StartInfo.WorkingDirectory = System.IO.Path.GetFullPath(AssetPath);
             game.Start();
@@ -528,10 +530,11 @@ namespace Editor
             {
                 string directory = System.IO.Path.GetDirectoryName(saveFileDialog.FileName) + "\\" + System.IO.Path.GetFileNameWithoutExtension(saveFileDialog.SafeFileName) + "\\";
                 Directory.CreateDirectory(directory);
+                DirectoryPath = directory;
                 AssetPath = directory + "Assets\\";
                 Directory.CreateDirectory(AssetPath);
                 File.WriteAllText(directory + saveFileDialog.SafeFileName, "test");
-                File.Copy("..\\..\\..\\RenderEngineDX12\\RenderEngineDX12.exe", directory + System.IO.Path.GetFileNameWithoutExtension(saveFileDialog.SafeFileName) + ".exe");
+                File.Copy("..\\..\\..\\Release\\RenderEngineDX12.exe", directory + System.IO.Path.GetFileNameWithoutExtension(saveFileDialog.SafeFileName) + ".exe");
                 SceneFile = saveFileDialog.FileName;
                 MainWindow.Window.sceneDisplay.Items.Clear();
                 MainWindow.Window.scenePreview.Children.Clear();
