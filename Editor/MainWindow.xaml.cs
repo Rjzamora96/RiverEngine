@@ -4,17 +4,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
@@ -384,6 +378,37 @@ namespace Editor
                 }
             }
             result = result.TrimEnd(',') + "}";
+            result += "\r\nmap={";
+            foreach (Tile tiles in _map)
+            {
+                EntityItem entity = new EntityItem();
+                entity.EName = "Tile";
+                entity.Tags = "{\"Tile\"}";
+                ComponentItem transformItem = new ComponentItem
+                {
+                    Name = "transform",
+                    Properties = new List<ComponentProperty>
+                    {
+                        new ComponentProperty("position","{" + tiles.Position.X +  "," + tiles.Position.Y + "}"),
+                        new ComponentProperty("rotation","0.0"),
+                        new ComponentProperty("scale","1.0")
+                    }
+                };
+                entity.Components.Add(transformItem);
+                ComponentItem spriteItem = new ComponentItem
+                {
+                    Name = "sprite",
+                    Properties = new List<ComponentProperty>
+                    {
+                        new ComponentProperty("sprite","\"" + tiles.Source + "\""),
+                        new ComponentProperty("origin","{0,0}"),
+                        new ComponentProperty("rectangle", "{" + tiles.Origin.X + "," + tiles.Origin.Y + "," + tiles.Dimensions.X + "," + tiles.Dimensions.Y + "}")
+                    }
+                };
+                entity.Components.Add(spriteItem);
+                result += entity.ToString() + ",";
+            }
+            result = result.TrimEnd(',') + "}";
             if (SceneFile.Equals(""))
             {
                 SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -458,7 +483,7 @@ namespace Editor
                     square.MouseDown += OnMouseDownTile;
                     Canvas.SetZIndex(square, -1000);
                     scenePreview.Children.Add(square);
-                    Tile tile = new Tile { Rect = square };
+                    Tile tile = new Tile { Rect = square, Position = new Point(i * TileSize, j * TileSize) };
                     _map.Add(tile);
                 }
             }
@@ -532,10 +557,27 @@ namespace Editor
                 Directory.CreateDirectory(directory);
                 DirectoryPath = directory;
                 AssetPath = directory + "Assets\\";
+                string[] properties =
+                {
+                    DirectoryPath,
+                    AssetPath
+                };
                 Directory.CreateDirectory(AssetPath);
-                File.WriteAllText(directory + saveFileDialog.SafeFileName, "test");
+                File.WriteAllLines(directory + saveFileDialog.SafeFileName, properties);
                 File.Copy("..\\..\\..\\Release\\RenderEngineDX12.exe", directory + System.IO.Path.GetFileNameWithoutExtension(saveFileDialog.SafeFileName) + ".exe");
-                SceneFile = saveFileDialog.FileName;
+                MainWindow.Window.sceneDisplay.Items.Clear();
+                MainWindow.Window.scenePreview.Children.Clear();
+                UpdateAssetDisplay();
+            }
+        }
+        private void OpenProject(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "River files (*.river)|*.river";
+            if (openFileDialog.ShowDialog() == true)
+            {
+                DirectoryPath = System.IO.Path.GetDirectoryName(openFileDialog.FileName) + "\\";
+                AssetPath = DirectoryPath + "Assets\\";
                 MainWindow.Window.sceneDisplay.Items.Clear();
                 MainWindow.Window.scenePreview.Children.Clear();
                 UpdateAssetDisplay();

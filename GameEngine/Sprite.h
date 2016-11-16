@@ -2,7 +2,7 @@
 
 #include "Component.h"
 #include "Vector2.h"
-
+#include "Rectangle.h"
 namespace RiverEngine
 {
 	class Sprite : public Component
@@ -23,6 +23,8 @@ namespace RiverEngine
 		}
 		unsigned int id;
 		Vector2 origin;
+		bool usesRect = false;
+		RiverEngine::Rectangle rect;
 	private:
 		std::string m_sprite;
 	};

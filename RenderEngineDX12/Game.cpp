@@ -109,7 +109,19 @@ void Game::Render()
 	{
 		RiverEngine::Vector2* vec = RenderableManager::renderables[i]->transform->position;
 		RiverEngine::Vector2 ori = RenderableManager::renderables[i]->sprite->origin;
-		m_spriteBatch->Draw(m_resourceDescriptors->GetGpuHandle(RenderableManager::renderables[i]->texture->id),
+		if (RenderableManager::renderables[i]->sprite->usesRect)
+		{
+			RiverEngine::Rectangle spriteRect = RenderableManager::renderables[i]->sprite->rect;
+			RECT rect;
+			rect.top = spriteRect.y;
+			rect.left = spriteRect.x;
+			rect.bottom = spriteRect.y + spriteRect.height;
+			rect.right = spriteRect.x + spriteRect.width;
+			m_spriteBatch->Draw(m_resourceDescriptors->GetGpuHandle(RenderableManager::renderables[i]->texture->id),
+				GetTextureSize(RenderableManager::renderables[i]->texture->texture.Get()),
+				Vector2(vec->x, vec->y), &rect, Colors::White, RenderableManager::renderables[i]->transform->rotation, Vector2(ori.x, ori.y), RenderableManager::renderables[i]->transform->scale);
+		}
+		else m_spriteBatch->Draw(m_resourceDescriptors->GetGpuHandle(RenderableManager::renderables[i]->texture->id),
 			GetTextureSize(RenderableManager::renderables[i]->texture->texture.Get()),
 			Vector2(vec->x, vec->y), nullptr, Colors::White, RenderableManager::renderables[i]->transform->rotation, Vector2(ori.x, ori.y), RenderableManager::renderables[i]->transform->scale);
 	}
@@ -135,7 +147,7 @@ void Game::Clear()
     CD3DX12_CPU_DESCRIPTOR_HANDLE rtvDescriptor(m_rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(), m_backBufferIndex, m_rtvDescriptorSize);
     CD3DX12_CPU_DESCRIPTOR_HANDLE dsvDescriptor(m_dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
     m_commandList->OMSetRenderTargets(1, &rtvDescriptor, FALSE, &dsvDescriptor);
-    m_commandList->ClearRenderTargetView(rtvDescriptor, Colors::CornflowerBlue, 0, nullptr);
+    m_commandList->ClearRenderTargetView(rtvDescriptor, Colors::Black, 0, nullptr);
     m_commandList->ClearDepthStencilView(dsvDescriptor, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
     // Set the viewport and scissor rect.
     D3D12_VIEWPORT viewport = { 0.0f, 0.0f, static_cast<float>(m_outputWidth), static_cast<float>(m_outputHeight), D3D12_MIN_DEPTH, D3D12_MAX_DEPTH };

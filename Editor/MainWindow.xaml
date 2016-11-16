@@ -11,7 +11,7 @@
             <ToolBar>
                 <Menu>
                     <MenuItem Header="Project">
-                        <MenuItem Header="Save Project" Click="SaveScene"/>
+                        <MenuItem Header="Open Project" Click="OpenProject"/>
                         <MenuItem Header="New Project" Click="NewProject"/>
                     </MenuItem>
                 </Menu>
