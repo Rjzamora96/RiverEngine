@@ -1,5 +1,10 @@
 ﻿  Engine.cpp
 c:\users\jacob zamora\riverengine\gameengine\Entity.h(23): warning C4114: same type qualifier used more than once
 Engine.cpp(19): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+  Entity.cpp
+c:\users\jacob zamora\riverengine\gameengine\Entity.h(23): warning C4114: same type qualifier used more than once
+Entity.cpp(21): warning C4114: same type qualifier used more than once
+  Sprite.cpp
+c:\users\jacob zamora\riverengine\gameengine\Entity.h(23): warning C4114: same type qualifier used more than once
   LINK : MSIL .netmodule or module compiled with /GL found; restarting link with /LTCG; add /LTCG to the link command line to improve linker performance
   GameEngine.vcxproj -> C:\Users\Jacob Zamora\RiverEngine\Release\GameEngine.lib

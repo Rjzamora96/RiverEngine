@@ -583,5 +583,73 @@ namespace Editor
                 UpdateAssetDisplay();
             }
         }
+        public void LoadTiles(List<EntityItem> tiles)
+        {
+            foreach (Tile square in _map)
+            {
+                scenePreview.Children.Remove(square.Rect);
+            }
+            _map.Clear();
+            for (int i = 0; i < tiles.Count; i++)
+            {
+                Point position = new Point();
+                string source = "":
+                foreach (ComponentItem component in tiles[i].Components)
+                {
+                    if(component.Name.Equals("transform"))
+                    {
+                        foreach(ComponentProperty property in component.Properties)
+                        {
+                            if(property.Name.Equals("position"))
+                            {
+                                Match match = Regex.Match(property.Value, "{(.*),(.*)}");
+                                if (match.Success)
+                                {
+                                    double x = 0;
+                                    double y = 0;
+                                    if (double.TryParse(match.Groups[1].ToString(), out x)) position = new Point(x, position.Y);
+                                    if (double.TryParse(match.Groups[2].ToString(), out y)) position = new Point(position.X, y);
+                                }
+                            }
+                        }
+                    }
+                    else if (component.Name.Equals("sprite"))
+                    {
+                        foreach (ComponentProperty property in component.Properties)
+                        {
+                            if (property.Name.Equals("rectangle"))
+                            {
+                            }
+                            else if (property.Name.Equals("sprite"))
+                            {
+                                Match match = Regex.Match(property.Value, "\"(.*)\"");
+                                if (match.Success)
+                                {
+                                    source = MainWindow.AssetPath + match.Groups[1].ToString();
+                                }
+                            }
+                        }
+                    }
+                }
+                //                        new ComponentProperty("rectangle", "{" + tiles.Origin.X + "," + tiles.Origin.Y + "," + tiles.Dimensions.X + "," + tiles.Dimensions.Y + "}")
+                Rectangle square = new Rectangle();
+                square.Width = 64;
+                square.Height = 64;
+                TransformGroup transform = new TransformGroup();
+                transform.Children.Add(new TranslateTransform(position.X, position.Y));
+                square.RenderTransform = transform;
+                square.Stroke = Brushes.Black;
+                square.Fill = Brushes.Gray;
+                square.StrokeThickness = 1;
+                square.MouseEnter += OnMouseEnterTile;
+                square.MouseEnter += OnMouseDownTile;
+                square.MouseLeave += OnMouseLeaveTile;
+                square.MouseDown += OnMouseDownTile;
+                Canvas.SetZIndex(square, -1000);
+                scenePreview.Children.Add(square);
+                Tile tile = new Tile { Rect = square, Position = new Point(position.X, position.Y) };
+                _map.Add(tile);
+            }
+        }
     }
 }

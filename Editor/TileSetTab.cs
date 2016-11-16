@@ -43,7 +43,7 @@ namespace Editor
             if (openFileDialog.ShowDialog() == true)
             {
                 BitmapImage bitmap = new BitmapImage(new Uri(openFileDialog.FileName, UriKind.RelativeOrAbsolute));
-                Source = openFileDialog.FileName;
+                Source = openFileDialog.SafeFileName;
                 int columns = ((int)bitmap.PixelWidth / MainWindow.Window.TileSize);
                 int rows = ((int)bitmap.PixelHeight / MainWindow.Window.TileSize);
                 FrameworkElementFactory gridPanel = new FrameworkElementFactory(typeof(Grid));

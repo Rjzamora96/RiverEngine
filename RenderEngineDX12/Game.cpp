@@ -363,7 +363,7 @@ void Game::CreateDevice()
 */
 	RenderTargetState rtState(DXGI_FORMAT_B8G8R8A8_UNORM, DXGI_FORMAT_D32_FLOAT);
 
-	SpriteBatchPipelineStateDescription pd(rtState);
+	SpriteBatchPipelineStateDescription pd(rtState, &CommonStates::NonPremultiplied);
 	m_spriteBatch = std::make_unique<SpriteBatch>(m_d3dDevice.Get(), resourceUpload, pd);
 
 	auto uploadResourcesFinished = resourceUpload.End(m_commandQueue.Get());

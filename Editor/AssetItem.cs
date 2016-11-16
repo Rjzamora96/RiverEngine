@@ -182,12 +182,21 @@ namespace Editor
             MainWindow.Window.SceneFile = _file.FullName;
             MainWindow.Window.sceneDisplay.Items.Clear();
             MainWindow.Window.scenePreview.Children.Clear();
-            List<string> entities = MainWindow.Window.DivideStrings(File.ReadAllText(_file.FullName));
+            string[] sceneArray = File.ReadAllLines(_file.FullName);
+            List<string> entities = MainWindow.Window.DivideStrings(sceneArray[0]);
+            List<string> tiles = MainWindow.Window.DivideStrings(sceneArray[1]);
             foreach (string entityScript in entities)
             {
                 if (entityScript.Equals("")) continue;
                 MainWindow.Window.sceneDisplay.Items.Add(EntityFromScript(entityScript));
             }
+            List<EntityItem> tileItems = new List<EntityItem>();
+            foreach (string tileScript in tiles)
+            {
+                if (tileScript.Equals("")) continue;
+                tileItems.Add(EntityFromScript(tileScript));
+            }
+            MainWindow.Window.LoadTiles(tileItems);
         }
         public void OpenScript(object sender, RoutedEventArgs e)
         {
