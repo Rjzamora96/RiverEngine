@@ -155,7 +155,8 @@ namespace Editor
                             Properties = new List<ComponentProperty>
                                             {
                                                 new ComponentProperty("sprite","\"\""),
-                                                new ComponentProperty("origin","{0,0}")
+                                                new ComponentProperty("origin","{0,0}"),
+                                                new ComponentProperty("rectangle","{0,0,0,0}")
                                             }
                         };
                         entity.Editor.AddComponent(transformItem);
@@ -182,7 +183,8 @@ namespace Editor
             MainWindow.Window.SceneFile = _file.FullName;
             MainWindow.Window.sceneDisplay.Items.Clear();
             MainWindow.Window.scenePreview.Children.Clear();
-            string[] sceneArray = File.ReadAllLines(_file.FullName);
+            string scene = File.ReadAllText(_file.FullName);
+            List<string> sceneArray = MainWindow.Window.DivideStrings(scene);
             List<string> entities = MainWindow.Window.DivideStrings(sceneArray[0]);
             List<string> tiles = MainWindow.Window.DivideStrings(sceneArray[1]);
             foreach (string entityScript in entities)

@@ -96,14 +96,14 @@ void Game::Render()
     // TODO: Add your rendering code here.
 	//float time = float(m_timer.GetTotalSeconds());
 
-	ID3D12DescriptorHeap* heaps[] = { m_resourceDescriptors->Heap() };
+	ID3D12DescriptorHeap* heaps[] = { m_resourceDescriptors->Heap(), m_states->Heap() };
 	m_commandList->SetDescriptorHeaps(_countof(heaps), heaps);
 
 	RiverEngine::Entity* camera = RiverEngine::Scene::GetEntityByTag("Camera");
-	XMMATRIX matrix(1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		-camera->transform->position->x, -camera->transform->position->y, 0.0f, 1.0f);
+	XMMATRIX matrix(camera->transform->scale, 0.0f, 0.0f, 0.0f,
+		0.0f, camera->transform->scale, 0.0f, 0.0f,
+		0.0f, 0.0f, camera->transform->scale, 0.0f,
+		-camera->transform->position->x + static_cast<float>(m_outputWidth / 2), -camera->transform->position->y + static_cast<float>(m_outputHeight / 2), 0.0f, 1.0f);
 	m_spriteBatch->Begin(m_commandList.Get(), SpriteSortMode_Deferred, matrix);
 	for (int i = 0; i < RenderableManager::renderables.Count(); i++)
 	{
@@ -117,13 +117,18 @@ void Game::Render()
 			rect.left = spriteRect.x;
 			rect.bottom = spriteRect.y + spriteRect.height;
 			rect.right = spriteRect.x + spriteRect.width;
+			XMUINT2 textureSize = GetTextureSize(RenderableManager::renderables[i]->texture->texture.Get());
 			m_spriteBatch->Draw(m_resourceDescriptors->GetGpuHandle(RenderableManager::renderables[i]->texture->id),
-				GetTextureSize(RenderableManager::renderables[i]->texture->texture.Get()),
-				Vector2(vec->x, vec->y), &rect, Colors::White, RenderableManager::renderables[i]->transform->rotation, Vector2(ori.x, ori.y), RenderableManager::renderables[i]->transform->scale);
+				textureSize, Vector2(vec->x, vec->y), &rect, Colors::White,
+				RenderableManager::renderables[i]->transform->rotation, Vector2((double)textureSize.x * ori.x, (double)textureSize.y * ori.y), RenderableManager::renderables[i]->transform->scale);
 		}
-		else m_spriteBatch->Draw(m_resourceDescriptors->GetGpuHandle(RenderableManager::renderables[i]->texture->id),
-			GetTextureSize(RenderableManager::renderables[i]->texture->texture.Get()),
-			Vector2(vec->x, vec->y), nullptr, Colors::White, RenderableManager::renderables[i]->transform->rotation, Vector2(ori.x, ori.y), RenderableManager::renderables[i]->transform->scale);
+		else
+		{
+			XMUINT2 textureSize = GetTextureSize(RenderableManager::renderables[i]->texture->texture.Get());
+			m_spriteBatch->Draw(m_resourceDescriptors->GetGpuHandle(RenderableManager::renderables[i]->texture->id),
+				textureSize, Vector2(vec->x, vec->y), nullptr, Colors::White,
+				RenderableManager::renderables[i]->transform->rotation, Vector2((double)textureSize.x * ori.x, (double)textureSize.y * ori.y), RenderableManager::renderables[i]->transform->scale);
+		}
 	}
 	m_spriteBatch->End();
 
@@ -251,7 +256,6 @@ void Game::CreateDevice()
 
     ComPtr<IDXGIAdapter1> adapter;
     GetAdapter(adapter.GetAddressOf());
-
     // Create the DX12 API device object.
     DX::ThrowIfFailed(D3D12CreateDevice(
         adapter.Get(),
@@ -323,6 +327,8 @@ void Game::CreateDevice()
 
     // TODO: Initialize device dependent objects here (independent of window size).
 
+	m_states = std::make_unique<CommonStates>(m_d3dDevice.Get());
+
 	m_graphicsMemory = std::make_unique<GraphicsMemory>(m_d3dDevice.Get());
 
 	m_resourceDescriptors = std::make_unique<DescriptorHeap>(m_d3dDevice.Get(),
@@ -342,7 +348,7 @@ void Game::CreateDevice()
 			CreateWICTextureFromFile(m_d3dDevice.Get(), resourceUpload, path,
 				sprite.second->texture.ReleaseAndGetAddressOf(), false));
 
-		CreateShaderResourceView(m_d3dDevice.Get(), sprite.second->texture.Get(),
+		CreateShaderResourceView(m_d3dDevice.Get(),sprite.second->texture.Get(),
 			m_resourceDescriptors->GetCpuHandle(sprite.second->id));
 		delete[] path;
 	}
@@ -362,8 +368,8 @@ void Game::CreateDevice()
 		m_resourceDescriptors->GetCpuHandle(Descriptors::Background));
 */
 	RenderTargetState rtState(DXGI_FORMAT_B8G8R8A8_UNORM, DXGI_FORMAT_D32_FLOAT);
-
-	SpriteBatchPipelineStateDescription pd(rtState, &CommonStates::NonPremultiplied);
+	auto sampler = m_states->PointClamp();
+	SpriteBatchPipelineStateDescription pd(rtState, &CommonStates::NonPremultiplied, nullptr, nullptr, &sampler);
 	m_spriteBatch = std::make_unique<SpriteBatch>(m_d3dDevice.Get(), resourceUpload, pd);
 
 	auto uploadResourcesFinished = resourceUpload.End(m_commandQueue.Get());
@@ -471,10 +477,10 @@ void Game::CreateResources()
         backBufferWidth,
         backBufferHeight,
         1, // This depth stencil view has only one texture.
-        1  // Use a single mipmap level.
+        1
         );
-    depthStencilDesc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 
+    depthStencilDesc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
     D3D12_CLEAR_VALUE depthOptimizedClearValue = {};
     depthOptimizedClearValue.Format = depthBufferFormat;
     depthOptimizedClearValue.DepthStencil.Depth = 1.0f;
@@ -498,7 +504,7 @@ void Game::CreateResources()
     m_d3dDevice->CreateDepthStencilView(m_depthStencil.Get(), &dsvDesc, m_dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 
     // TODO: Initialize windows-size dependent objects here.
-	D3D12_VIEWPORT viewport = { 100.0f, 100.0f,
+	D3D12_VIEWPORT viewport = { 0.0f, 0.0f,
 		static_cast<float>(backBufferWidth), static_cast<float>(backBufferHeight),
 		D3D12_MIN_DEPTH, D3D12_MAX_DEPTH };
 	m_spriteBatch->SetViewport(viewport);

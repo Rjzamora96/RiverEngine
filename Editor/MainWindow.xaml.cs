@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
@@ -302,6 +303,7 @@ namespace Editor
                 {
                     new ComponentProperty("sprite","\"\""),
                     new ComponentProperty("origin","{0,0}"),
+                    new ComponentProperty("rectangle","{0,0,0,0}")
                 }
             };
             BasicComponentItem sprite = new BasicComponentItem(spriteItem);
@@ -368,7 +370,7 @@ namespace Editor
         }
         private void SaveScene(object sender, RoutedEventArgs e)
         {
-            string result = "scene={";
+            string result = "scene={entities={";
             foreach (UIElement element in sceneDisplay.Items)
             {
                 EntityItem entity = element as EntityItem;
@@ -378,7 +380,7 @@ namespace Editor
                 }
             }
             result = result.TrimEnd(',') + "}";
-            result += "\r\nmap={";
+            result += ",map={";
             foreach (Tile tiles in _map)
             {
                 EntityItem entity = new EntityItem();
@@ -408,7 +410,7 @@ namespace Editor
                 entity.Components.Add(spriteItem);
                 result += entity.ToString() + ",";
             }
-            result = result.TrimEnd(',') + "}";
+            result = result.TrimEnd(',') + "}}";
             if (SceneFile.Equals(""))
             {
                 SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -483,7 +485,7 @@ namespace Editor
                     square.MouseDown += OnMouseDownTile;
                     Canvas.SetZIndex(square, -1000);
                     scenePreview.Children.Add(square);
-                    Tile tile = new Tile { Rect = square, Position = new Point(i * TileSize, j * TileSize) };
+                    Tile tile = new Tile { Rect = square, Position = new Point(i * TileSize, j * TileSize), Origin = new Point(0, 0), Dimensions = new Point(TileSize, TileSize), Source = "", IsFilled = false };
                     _map.Add(tile);
                 }
             }
@@ -522,6 +524,8 @@ namespace Editor
                         tile.Rect.Fill = new ImageBrush(tileSet.SelectedTile.Image.Source);
                         tile.IsFilled = true;
                         tile.Source = tileSet.Source;
+                        tile.Origin = tileSet.SelectedTile.Origin;
+                        tile.Dimensions = tileSet.SelectedTile.Dimensions;
                     }
                 }
             }
@@ -593,7 +597,9 @@ namespace Editor
             for (int i = 0; i < tiles.Count; i++)
             {
                 Point position = new Point();
-                string source = "":
+                double[] rectangle = { 0, 0, 0, 0 };
+                bool filled = false;
+                string source = "\"\"";
                 foreach (ComponentItem component in tiles[i].Components)
                 {
                     if(component.Name.Equals("transform"))
@@ -619,13 +625,29 @@ namespace Editor
                         {
                             if (property.Name.Equals("rectangle"))
                             {
+                                Match match = Regex.Match(property.Value, "{(.*),(.*),(.*),(.*)}");
+                                if (match.Success)
+                                {
+                                    double x = 0;
+                                    double y = 0;
+                                    double dimensionX = 0;
+                                    double dimensionY = 0;
+                                    if (double.TryParse(match.Groups[1].ToString(), out x)) rectangle[0] = x;
+                                    if (double.TryParse(match.Groups[2].ToString(), out y)) rectangle[1] = y;
+                                    if (double.TryParse(match.Groups[3].ToString(), out dimensionX)) rectangle[2] = dimensionX;
+                                    if (double.TryParse(match.Groups[4].ToString(), out dimensionY)) rectangle[3] = dimensionY;
+                                }
                             }
                             else if (property.Name.Equals("sprite"))
                             {
                                 Match match = Regex.Match(property.Value, "\"(.*)\"");
                                 if (match.Success)
                                 {
-                                    source = MainWindow.AssetPath + match.Groups[1].ToString();
+                                    if (!match.Groups[0].ToString().Equals("\"\""))
+                                    {
+                                        source = match.Groups[1].ToString();
+                                        filled = true;
+                                    }
                                 }
                             }
                         }
@@ -633,8 +655,9 @@ namespace Editor
                 }
                 //                        new ComponentProperty("rectangle", "{" + tiles.Origin.X + "," + tiles.Origin.Y + "," + tiles.Dimensions.X + "," + tiles.Dimensions.Y + "}")
                 Rectangle square = new Rectangle();
-                square.Width = 64;
-                square.Height = 64;
+                square.Width = rectangle[2];
+                square.Height = rectangle[3];
+                TileSize = (int)square.Width;
                 TransformGroup transform = new TransformGroup();
                 transform.Children.Add(new TranslateTransform(position.X, position.Y));
                 square.RenderTransform = transform;
@@ -647,7 +670,14 @@ namespace Editor
                 square.MouseDown += OnMouseDownTile;
                 Canvas.SetZIndex(square, -1000);
                 scenePreview.Children.Add(square);
-                Tile tile = new Tile { Rect = square, Position = new Point(position.X, position.Y) };
+                if(filled)
+                {
+                    BitmapImage bitmap = new BitmapImage(new Uri(MainWindow.AssetPath + source, UriKind.RelativeOrAbsolute));
+                    CroppedBitmap cropped = new CroppedBitmap(bitmap, new Int32Rect((int)rectangle[0], (int)rectangle[1], (int)rectangle[2], (int)rectangle[3]));
+                    square.Fill = new ImageBrush(cropped);
+                    square.StrokeThickness = 0;
+                }
+                Tile tile = new Tile { Rect = square, Position = new Point(position.X, position.Y), Origin = new Point(rectangle[0], rectangle[1]), Dimensions = new Point(rectangle[2], rectangle[3]), Source = source, IsFilled = filled };
                 _map.Add(tile);
             }
         }

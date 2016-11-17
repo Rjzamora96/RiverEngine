@@ -96,10 +96,18 @@ namespace RiverEngine
 		if (luaL_dofile(L, path.c_str()) == 0)
 		{
 			LuaRef table = getGlobal(L, "scene");
-			for (int i = 1; i <= table.length(); i++)
+			LuaRef tiles = table["map"];
+			for (int i = 1; i <= tiles.length(); i++)
 			{
 				Entity* entity = new Entity();
-				entity->LoadComponentsFromTable(table[i]);
+				entity->LoadComponentsFromTable(tiles[i]);
+				AddEntity(entity);
+			}
+			LuaRef entities = table["entities"];
+			for (int i = 1; i <= entities.length(); i++)
+			{
+				Entity* entity = new Entity();
+				entity->LoadComponentsFromTable(entities[i]);
 				AddEntity(entity);
 			}
 		}

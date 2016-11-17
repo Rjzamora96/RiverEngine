@@ -30,6 +30,7 @@ namespace Editor
         private Point _localPosition;
         public double OriginX { get; set; }
         public double OriginY { get; set; }
+        public double[] Rectangle { get; set; }
         public double Rotation { get { return (Owner.EParent != null) ? _localRotation + Owner.EParent.Preview.Rotation : _localRotation; } }
         private double _localRotation;
         public double Scale {
@@ -49,6 +50,7 @@ namespace Editor
             Sprite = new Image();
             _localPosition = new Point();
             Sprite.PreviewMouseDown += MoveItem;
+            Rectangle = new double[4];
             FileName = "";
         }
         private void CheckMouse()
@@ -124,7 +126,7 @@ namespace Editor
                     TransformGroup transform = new TransformGroup();
                     transform.Children.Add(new ScaleTransform(Scale, Scale));
                     transform.Children.Add(new RotateTransform(Rotation));
-                    transform.Children.Add(new TranslateTransform((Position.X - OriginX) + MainWindow.CameraPosition.X, (Position.Y - OriginY) + MainWindow.CameraPosition.Y));
+                    transform.Children.Add(new TranslateTransform((Position.X - (OriginX * Sprite.ActualWidth)) + MainWindow.CameraPosition.X, (Position.Y - (OriginY * Sprite.ActualHeight)) + MainWindow.CameraPosition.Y));
                     Sprite.RenderTransform = transform;
                 }
                 else if(comp.Name.Equals("sprite"))
@@ -142,6 +144,31 @@ namespace Editor
                                 if (double.TryParse(match.Groups[2].ToString(), out y)) OriginY = y;
                             }
                         }
+                        else if (property.Name.Equals("rectangle"))
+                        {
+                            Match match = Regex.Match(property.Value, "{(.*),(.*),(.*),(.*)}");
+                            if (match.Success)
+                            {
+                                double x = 0;
+                                double y = 0;
+                                double dimensionX = 0;
+                                double dimensionY = 0;
+                                if (double.TryParse(match.Groups[1].ToString(), out x)) Rectangle[0] = x;
+                                if (double.TryParse(match.Groups[2].ToString(), out y)) Rectangle[1] = y;
+                                if (double.TryParse(match.Groups[3].ToString(), out dimensionX)) Rectangle[2] = dimensionX;
+                                if (double.TryParse(match.Groups[4].ToString(), out dimensionY)) Rectangle[3] = dimensionY;
+                                if (File.Exists(FileName))
+                                {
+                                    FileInfo file = new FileInfo(FileName);
+                                    if (file.Extension.Equals(".png"))
+                                    {
+                                        BitmapImage image = new BitmapImage(new Uri(FileName, UriKind.RelativeOrAbsolute));
+                                        CroppedBitmap cropped = new CroppedBitmap(image, new Int32Rect { X = (int)Rectangle[0], Y = (int)Rectangle[1], Width = (int)Rectangle[2], Height = (int)Rectangle[3] });
+                                        Sprite.Source = cropped;
+                                    }
+                                }
+                            }
+                        }
                         else if (property.Name.Equals("sprite"))
                         {
                             Match match = Regex.Match(property.Value, "\"(.*)\"");
@@ -155,6 +182,11 @@ namespace Editor
                                         if(!file.FullName.Equals(FileName))
                                         {
                                             BitmapImage image = new BitmapImage(new Uri(file.FullName, UriKind.RelativeOrAbsolute));
+                                            Rectangle[0] = 0;
+                                            Rectangle[1] = 0;
+                                            Rectangle[2] = image.Width;
+                                            Rectangle[3] = image.Height;
+                                            CroppedBitmap cropped = new CroppedBitmap(image, new Int32Rect { X = (int)Rectangle[0], Y = (int)Rectangle[1], Width = (int)Rectangle[2], Height = (int)Rectangle[3] });
                                             Sprite.Source = image;
                                             FileName = file.FullName;
                                         }

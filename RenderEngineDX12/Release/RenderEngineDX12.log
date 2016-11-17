@@ -1,13 +1,2 @@
-﻿  Game.cpp
-c:\users\jacob zamora\riverengine\gameengine\Entity.h(23): warning C4114: same type qualifier used more than once
-Game.cpp(116): warning C4244: '=': conversion from 'float' to 'LONG', possible loss of data
-Game.cpp(117): warning C4244: '=': conversion from 'float' to 'LONG', possible loss of data
-Game.cpp(118): warning C4244: '=': conversion from 'float' to 'LONG', possible loss of data
-Game.cpp(119): warning C4244: '=': conversion from 'float' to 'LONG', possible loss of data
-  Generating code
-  0 of 2441 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
-  Finished generating code
-  RenderEngineDX12.vcxproj -> C:\Users\Jacob Zamora\RiverEngine\Release\RenderEngineDX12.exe
-  RenderEngineDX12.vcxproj -> C:\Users\Jacob Zamora\RiverEngine\Release\RenderEngineDX12.pdb (Full PDB)
+﻿  RenderEngineDX12.vcxproj -> D:\RiverEngine\Release\RenderEngineDX12.exe
+  RenderEngineDX12.vcxproj -> D:\RiverEngine\Release\RenderEngineDX12.pdb (Full PDB)

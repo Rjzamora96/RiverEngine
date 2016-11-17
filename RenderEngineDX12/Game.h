@@ -9,6 +9,7 @@
 #include "ArrayList.h"
 #include "Keyboard.h"
 #include "SimpleMath.h"
+#include "CommonStates.h"
 
 // A basic game implementation that creates a D3D12 device and
 // provides a game loop.
@@ -84,6 +85,7 @@ private:
 	std::unique_ptr<DirectX::GraphicsMemory> m_graphicsMemory;
 	std::unique_ptr<DirectX::DescriptorHeap> m_resourceDescriptors;
 	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
+	std::unique_ptr<DirectX::CommonStates> m_states;
 
 	DirectX::SimpleMath::Vector2 m_offset;
 

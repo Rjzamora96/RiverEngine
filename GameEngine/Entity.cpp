@@ -104,6 +104,15 @@ namespace RiverEngine
 					LuaRef origin = subTable["origin"];
 					((Sprite*)c)->origin.x = origin[1].cast<float>();
 					((Sprite*)c)->origin.y = origin[2].cast<float>();
+					LuaRef rect = subTable["rectangle"];
+					if (!rect.isNil())
+					{
+						((Sprite*)c)->rect.x = rect[1].cast<float>();
+						((Sprite*)c)->rect.y = rect[2].cast<float>();
+						((Sprite*)c)->rect.width = rect[3].cast<float>();
+						((Sprite*)c)->rect.height = rect[4].cast<float>();
+						((Sprite*)c)->usesRect = true;
+					}
 					AddComponent(c, "sprite");
 					Sprite::addSprite((Sprite*)c, subTable["sprite"].cast<std::string>());
 				}
