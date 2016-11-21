@@ -1,4 +1,0 @@
-﻿  Scene.cpp
-d:\riverengine\gameengine\Entity.h(23): warning C4114: same type qualifier used more than once
-  LINK : MSIL .netmodule or module compiled with /GL found; restarting link with /LTCG; add /LTCG to the link command line to improve linker performance
-  GameEngine.vcxproj -> D:\RiverEngine\Release\GameEngine.lib

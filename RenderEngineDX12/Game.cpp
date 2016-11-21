@@ -103,7 +103,7 @@ void Game::Render()
 	XMMATRIX matrix(camera->transform->scale, 0.0f, 0.0f, 0.0f,
 		0.0f, camera->transform->scale, 0.0f, 0.0f,
 		0.0f, 0.0f, camera->transform->scale, 0.0f,
-		-camera->transform->position->x + static_cast<float>(m_outputWidth / 2), -camera->transform->position->y + static_cast<float>(m_outputHeight / 2), 0.0f, 1.0f);
+		-camera->transform->position->x * camera->transform->scale + static_cast<float>(m_outputWidth / 2), -camera->transform->position->y * camera->transform->scale + static_cast<float>(m_outputHeight / 2), 0.0f, 1.0f);
 	m_spriteBatch->Begin(m_commandList.Get(), SpriteSortMode_Deferred, matrix);
 	for (int i = 0; i < RenderableManager::renderables.Count(); i++)
 	{
