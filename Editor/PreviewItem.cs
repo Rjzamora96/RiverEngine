@@ -163,8 +163,11 @@ namespace Editor
                                     if (file.Extension.Equals(".png"))
                                     {
                                         BitmapImage image = new BitmapImage(new Uri(FileName, UriKind.RelativeOrAbsolute));
-                                        CroppedBitmap cropped = new CroppedBitmap(image, new Int32Rect { X = (int)Rectangle[0], Y = (int)Rectangle[1], Width = (int)Rectangle[2], Height = (int)Rectangle[3] });
-                                        Sprite.Source = cropped;
+                                        if (image.PixelWidth <= Rectangle[0] + Rectangle[2])
+                                        {
+                                            CroppedBitmap cropped = new CroppedBitmap(image, new Int32Rect { X = (int)Rectangle[0], Y = (int)Rectangle[1], Width = (int)Rectangle[2], Height = (int)Rectangle[3] });
+                                            Sprite.Source = cropped;
+                                        }
                                     }
                                 }
                             }

@@ -30,6 +30,7 @@
 
 /packages
 /Debug
+/Release
 /ipch
 /.vs
 /RenderEngineDX12/Debug
@@ -37,3 +38,4 @@
 /GameEngine/Debug
 obj
 bin
+/GameEngine/Release

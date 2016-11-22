@@ -1,2 +1,5 @@
-﻿  RenderEngineDX12.vcxproj -> D:\RiverEngine\Release\RenderEngineDX12.exe
-  RenderEngineDX12.vcxproj -> D:\RiverEngine\Release\RenderEngineDX12.pdb (Full PDB)
+﻿  Generating code
+  All 2465 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  RenderEngineDX12.vcxproj -> C:\Users\Jacob Zamora\RiverEngine\Release\RenderEngineDX12.exe
+  RenderEngineDX12.vcxproj -> C:\Users\Jacob Zamora\RiverEngine\Release\RenderEngineDX12.pdb (Full PDB)

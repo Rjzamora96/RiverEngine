@@ -568,7 +568,7 @@ namespace Editor
                 };
                 Directory.CreateDirectory(AssetPath);
                 File.WriteAllLines(directory + saveFileDialog.SafeFileName, properties);
-                File.Copy("..\\..\\..\\Release\\RenderEngineDX12.exe", directory + System.IO.Path.GetFileNameWithoutExtension(saveFileDialog.SafeFileName) + ".exe");
+                File.Copy("..\\..\\..\\Release\\RenderEngineDX12.exe", directory + /*System.IO.Path.GetFileNameWithoutExtension(saveFileDialog.SafeFileName) + */"RenderEngineDX12.exe");
                 MainWindow.Window.sceneDisplay.Items.Clear();
                 MainWindow.Window.scenePreview.Children.Clear();
                 UpdateAssetDisplay();
@@ -653,7 +653,6 @@ namespace Editor
                         }
                     }
                 }
-                //                        new ComponentProperty("rectangle", "{" + tiles.Origin.X + "," + tiles.Origin.Y + "," + tiles.Dimensions.X + "," + tiles.Dimensions.Y + "}")
                 Rectangle square = new Rectangle();
                 square.Width = rectangle[2];
                 square.Height = rectangle[3];
