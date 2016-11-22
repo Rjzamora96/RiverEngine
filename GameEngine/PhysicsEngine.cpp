@@ -18,7 +18,7 @@ namespace RiverEngine
 		return false;
 	}
 
-	bool RiverEngine::PhysicsEngine::RefreshEntities()
+	bool PhysicsEngine::RefreshEntities()
 	{
 		return false;
 	}
