@@ -163,10 +163,13 @@ namespace Editor
                                     if (file.Extension.Equals(".png"))
                                     {
                                         BitmapImage image = new BitmapImage(new Uri(FileName, UriKind.RelativeOrAbsolute));
-                                        if (image.PixelWidth <= Rectangle[0] + Rectangle[2])
+                                        if (image.PixelWidth >= Rectangle[0] + Rectangle[2] && image.PixelHeight >= Rectangle[1] + Rectangle[3])
                                         {
-                                            CroppedBitmap cropped = new CroppedBitmap(image, new Int32Rect { X = (int)Rectangle[0], Y = (int)Rectangle[1], Width = (int)Rectangle[2], Height = (int)Rectangle[3] });
-                                            Sprite.Source = cropped;
+                                            if(Rectangle[2] > 0.0 && Rectangle[3] > 0.0)
+                                            {
+                                                CroppedBitmap cropped = new CroppedBitmap(image, new Int32Rect { X = (int)Rectangle[0], Y = (int)Rectangle[1], Width = (int)Rectangle[2], Height = (int)Rectangle[3] });
+                                                Sprite.Source = cropped;
+                                            }
                                         }
                                     }
                                 }
@@ -184,14 +187,17 @@ namespace Editor
                                     {
                                         if(!file.FullName.Equals(FileName))
                                         {
-                                            BitmapImage image = new BitmapImage(new Uri(file.FullName, UriKind.RelativeOrAbsolute));
-                                            Rectangle[0] = 0;
-                                            Rectangle[1] = 0;
-                                            Rectangle[2] = image.Width;
-                                            Rectangle[3] = image.Height;
-                                            CroppedBitmap cropped = new CroppedBitmap(image, new Int32Rect { X = (int)Rectangle[0], Y = (int)Rectangle[1], Width = (int)Rectangle[2], Height = (int)Rectangle[3] });
-                                            Sprite.Source = image;
-                                            FileName = file.FullName;
+                                            if(Rectangle[2] > 0.0 && Rectangle[3] > 0.0)
+                                            {
+                                                BitmapImage image = new BitmapImage(new Uri(file.FullName, UriKind.RelativeOrAbsolute));
+                                                Rectangle[0] = 0;
+                                                Rectangle[1] = 0;
+                                                Rectangle[2] = image.Width;
+                                                Rectangle[3] = image.Height;
+                                                CroppedBitmap cropped = new CroppedBitmap(image, new Int32Rect { X = (int)Rectangle[0], Y = (int)Rectangle[1], Width = (int)Rectangle[2], Height = (int)Rectangle[3] });
+                                                Sprite.Source = image;
+                                                FileName = file.FullName;
+                                            }
                                         }
                                     }
                                 }

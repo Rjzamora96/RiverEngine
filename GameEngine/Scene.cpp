@@ -1,6 +1,7 @@
 #include "Scene.h"
 
 #include "LuaBridge.h"
+#include "PhysicsEngine.h"
 
 namespace RiverEngine
 {
@@ -13,6 +14,8 @@ namespace RiverEngine
 
 	Scene::Scene()
 	{
+		m_physics = new PhysicsEngine();
+		m_physics->owner = this;
 	}
 
 	Scene::~Scene()
@@ -33,6 +36,7 @@ namespace RiverEngine
 		{
 			m_activeScene->m_entityList[i]->Update(dt);
 		}
+		m_activeScene->m_physics->Update(dt);
 		if (m_toChangeScene)
 		{
 			if (onSceneChange != 0) onSceneChange();

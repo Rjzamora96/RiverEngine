@@ -1,12 +1,12 @@
 #include "BoxCollider.h"
 
-
-
-BoxCollider::BoxCollider()
+namespace RiverEngine
 {
-}
+	BoxCollider::BoxCollider()
+	{
+	}
 
-
-BoxCollider::~BoxCollider()
-{
+	BoxCollider::~BoxCollider()
+	{
+	}
 }

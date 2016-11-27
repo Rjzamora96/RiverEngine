@@ -4,6 +4,8 @@
 #include "Component.h"
 #include "Transform.h"
 #include "Sprite.h"
+#include "BoxCollider.h"
+#include "Rectangle.h"
 
 namespace RiverEngine
 {
@@ -96,6 +98,16 @@ namespace RiverEngine
 					((Transform*)c)->localRotation = subTable["rotation"].cast<float>();
 					((Transform*)c)->localScale = subTable["scale"].cast<float>();
 					AddComponent(c, "transform");
+				}
+				else if (subTable["componentName"].cast<std::string>().compare("boxCollider") == 0)
+				{
+					delete c;
+					c = new BoxCollider();
+					LuaRef rectangle = subTable["rectangle"];
+					((BoxCollider*)c)->rect.x = rectangle[1].cast<float>();
+					((BoxCollider*)c)->rect.y = rectangle[2].cast<float>();
+					((BoxCollider*)c)->rect.width = rectangle[3].cast<float>();
+					((BoxCollider*)c)->rect.height = rectangle[4].cast<float>();
 				}
 				else if (subTable["componentName"].cast<std::string>().compare("sprite") == 0)
 				{

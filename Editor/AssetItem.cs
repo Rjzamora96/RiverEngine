@@ -147,6 +147,19 @@ namespace Editor
                         entity.Editor.AddComponent(transformItem);
                         transformItem.SetProperties(savedValues);
                     }
+                    else if (nameMatch.Groups[1].ToString().Equals("boxCollider"))
+                    {
+                        ComponentItem boxColliderItem = new ComponentItem
+                        {
+                            Name = "boxCollider",
+                            Properties = new List<ComponentProperty>
+                                            {
+                                                new ComponentProperty("rectangle","{0,0,0,0}")
+                                            }
+                        };
+                        entity.Editor.AddComponent(boxColliderItem);
+                        boxColliderItem.SetProperties(savedValues);
+                    }
                     else if (nameMatch.Groups[1].ToString().Equals("sprite"))
                     {
                         ComponentItem transformItem = new ComponentItem

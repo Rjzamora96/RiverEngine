@@ -308,6 +308,16 @@ namespace Editor
             };
             BasicComponentItem sprite = new BasicComponentItem(spriteItem);
             basicsDisplay.Items.Add(sprite);
+            ComponentItem boxColliderItem = new ComponentItem
+            {
+                Name = "boxCollider",
+                Properties = new List<ComponentProperty>
+                {
+                    new ComponentProperty("rectangle","{0,0,0,0}")
+                }
+            };
+            BasicComponentItem boxCollider = new BasicComponentItem(boxColliderItem);
+            basicsDisplay.Items.Add(boxCollider);
         }
 
         private void OpenFile(object sender, RoutedEventArgs e)
@@ -434,7 +444,16 @@ namespace Editor
             saveFileDialog.Filter = "Script files (*.lua)|*.lua";
             if(saveFileDialog.ShowDialog() == true)
             {
-                File.WriteAllText(saveFileDialog.FileName, "");
+                Uri uri = new Uri("BaseComponent.lua", UriKind.RelativeOrAbsolute);
+                File.WriteAllText(saveFileDialog.FileName, 
+@"function Initialize(self)
+end
+
+function Update(self, dt)
+end
+
+function OnMessage(self, id, message, sender)
+end");
                 TextEditor activeEditor = new TextEditor();
                 activeEditor.OpenFile(saveFileDialog.FileName);
                 UpdateAssetDisplay();

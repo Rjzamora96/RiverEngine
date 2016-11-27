@@ -1,12 +1,14 @@
 #pragma once
 
 #include "ArrayList.h"
-
-class Entity;
-class Scene;
+#include "BoxCollider.h"
+#include "Vector2.h"
 
 namespace RiverEngine
 {
+	class Entity;
+	class Scene;
+
 	class PhysicsEngine
 	{
 	public:
@@ -14,8 +16,10 @@ namespace RiverEngine
 		~PhysicsEngine();
 		bool Update(float dt);
 		bool RefreshEntities();
+		bool DoOverlap(Vector2 l1, Vector2 r1, Vector2 l2, Vector2 r2);
 		Scene* owner = 0;
 	private:
 		ArrayList<Entity*> m_entityList;
+		ArrayList<BoxCollider*> m_boxColliders;
 	};
 }
