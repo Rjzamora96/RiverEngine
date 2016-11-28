@@ -25,7 +25,7 @@ namespace RiverEngine
 		static bool m_toChangeScene;
 		static std::string m_newScenePath;
 		static void ChangeScene(std::string path);
-		static void Instantiate(std::string path);
+		static Entity* Instantiate(std::string path);
 		void LoadSceneFromFile(std::string path);
 		static ClearRenderables onSceneChange;
 	private:

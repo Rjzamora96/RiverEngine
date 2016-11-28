@@ -465,7 +465,7 @@ end");
             saveFileDialog.Filter = "Scene files (*.scene)|*.scene";
             if (saveFileDialog.ShowDialog() == true)
             {
-                File.WriteAllText(saveFileDialog.FileName, "scene={}");
+                File.WriteAllText(saveFileDialog.FileName, "scene={entities={},map={}}");
                 SceneFile = saveFileDialog.FileName;
                 MainWindow.Window.sceneDisplay.Items.Clear();
                 MainWindow.Window.scenePreview.Children.Clear();

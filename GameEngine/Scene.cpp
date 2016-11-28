@@ -45,9 +45,13 @@ namespace RiverEngine
 			m_activeScene->LoadSceneFromFile(m_newScenePath);
 			m_toChangeScene = false;
 		}
-		for (int i = 0; i < m_instantiateQueue.Count(); i++)
+		if (m_instantiateQueue.Count() >= 1)
 		{
-			m_activeScene->m_entityList.Add(m_instantiateQueue[i]);
+			for (int i = 0; i < m_instantiateQueue.Count(); i++)
+			{
+				m_activeScene->m_entityList.Add(m_instantiateQueue[i]);
+			}
+			m_activeScene->m_physics->RefreshEntities();
 		}
 		m_instantiateQueue.Clear();
 	}
@@ -88,11 +92,12 @@ namespace RiverEngine
 		m_toChangeScene = true;
 		m_newScenePath = path;
 	}
-	void Scene::Instantiate(std::string path)
+	Entity* Scene::Instantiate(std::string path)
 	{
 		Entity* entity = new Entity();
 		entity->LoadComponents(path);
 		m_instantiateQueue.Add(entity);
+		return entity;
 	}
 	void Scene::LoadSceneFromFile(std::string path)
 	{
@@ -114,6 +119,7 @@ namespace RiverEngine
 				entity->LoadComponentsFromTable(entities[i]);
 				AddEntity(entity);
 			}
+			m_physics->RefreshEntities();
 		}
 	}
 }

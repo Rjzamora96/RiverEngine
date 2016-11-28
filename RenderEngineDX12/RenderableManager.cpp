@@ -3,6 +3,7 @@
 #include "Sprite.h"
 #include "Transform.h"
 #include "Scene.h"
+#include "Vector2.h"
 
 RiverEngine::ArrayList<Renderable*> RenderableManager::renderables = RiverEngine::ArrayList<Renderable*>();
 std::unordered_map<std::string, Texture*> RenderableManager::spriteMap;
@@ -34,6 +35,10 @@ void RenderableManager::AddSprite(RiverEngine::Sprite* sprite, std::string path)
 	r->layer = 0.0f;
 	r->texture = spriteMap[path];
 	r->transform = sprite->owner->transform;
+	r->transform->scale = r->transform->localScale;
+	r->transform->position->x = r->transform->localPosition->x;
+	r->transform->position->y = r->transform->localPosition->y;
+	r->transform->rotation = r->transform->localRotation;
 	renderables.Add(r);
 }
 

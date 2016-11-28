@@ -107,6 +107,7 @@ void Game::Render()
 	m_spriteBatch->Begin(m_commandList.Get(), SpriteSortMode_Deferred, matrix);
 	for (int i = 0; i < RenderableManager::renderables.Count(); i++)
 	{
+		RenderableManager::renderables[i]->transform->Update(0);
 		RiverEngine::Vector2* vec = RenderableManager::renderables[i]->transform->position;
 		RiverEngine::Vector2 ori = RenderableManager::renderables[i]->sprite->origin;
 		if (RenderableManager::renderables[i]->sprite->usesRect)

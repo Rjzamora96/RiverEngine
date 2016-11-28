@@ -83,6 +83,7 @@ namespace RiverEngine
 			.addData("sprite", &Entity::sprite)
 			.addFunction("getComponent", &Entity::GetComponent)
 			.addFunction("sendMessage", &Entity::SendMessage)
+			.addFunction("hasTag", &Entity::HasTag)
 			.endClass();
 		Component::AssignState(L);
 		Entity::AssignState(L);

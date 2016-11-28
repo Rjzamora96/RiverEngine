@@ -108,6 +108,7 @@ namespace RiverEngine
 					((BoxCollider*)c)->rect.y = rectangle[2].cast<float>();
 					((BoxCollider*)c)->rect.width = rectangle[3].cast<float>();
 					((BoxCollider*)c)->rect.height = rectangle[4].cast<float>();
+					AddComponent(c, "boxCollider");
 				}
 				else if (subTable["componentName"].cast<std::string>().compare("sprite") == 0)
 				{

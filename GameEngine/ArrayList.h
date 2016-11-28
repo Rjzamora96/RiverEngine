@@ -30,7 +30,7 @@ namespace RiverEngine
 	template <class T>
 	ArrayList<T>::~ArrayList()
 	{
-		delete[] m_array;
+		//delete[] m_array;
 	}
 
 	template <class T>
@@ -44,7 +44,7 @@ namespace RiverEngine
 				temp[i] = m_array[i];
 			}
 			m_size *= 2;
-			delete[] m_array;
+			//delete[] m_array;
 			m_array = temp;
 		}
 		m_array[m_count] = t;
@@ -65,7 +65,7 @@ namespace RiverEngine
 	template<class T>
 	inline void ArrayList<T>::Clear()
 	{
-		delete[] m_array;
+		//delete[] m_array;
 		m_array = new T[1];
 		m_count = 0;
 		m_size = 1;
